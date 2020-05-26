@@ -1,0 +1,6 @@
+{
+  "name": "Cash_Deposit",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./Cash_Deposit.js"
+}

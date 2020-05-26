@@ -1,0 +1,6 @@
+{
+  "name": "Cash_Withdrawal",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./Cash_Withdrawal.js"
+}

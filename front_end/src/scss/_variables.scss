@@ -1,0 +1,53 @@
+// Variable overrides
+button.close{
+  display: none;
+}
+
+//for table scroll
+/*
+.mygrid-wrapper-div {
+    border: solid #84adf4 2px;
+    overflow: auto;
+    height: 400px;
+}
+*/
+
+
+//for table scroll
+/*
+.table {
+  overflow: auto;
+  display: block;
+  table-layout: auto !important;
+  }
+*/
+
+.react-bootstrap-table{
+  overflow-x:auto !important;
+  }
+
+  //image caption
+  .ril__caption {
+    padding-left: 210px;
+  }
+  
+  //table carets
+  table thead .caret {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 2px;
+    vertical-align: middle;
+    border-top: 4px dashed;
+    border-top: 4px solid \9;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+   }
+   
+   table thead .dropup .caret,
+   table thead .navbar-fixed-bottom .dropdown .caret {
+    border-top: 0;
+    border-bottom: 4px dashed;
+    border-bottom: 4px solid \9;
+    content: "";
+   }
