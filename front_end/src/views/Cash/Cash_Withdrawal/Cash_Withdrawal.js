@@ -574,7 +574,7 @@ class Pagis extends React.PureComponent {
       status_type: this.state.statusType,
     });
     */
-    //this.setState({ loading: true });
+    this.setState({ loading: true });
 
     axios.get('http://' + BACKENDIP + ':' + BACKENDPORT + '/cashwithdrawal/getfilterdeposit', {
       params: {
@@ -1091,7 +1091,7 @@ class Pagis extends React.PureComponent {
       var loader = <h6><Spinner name="ball-beat" color="steelblue" />Now Loading...</h6>;
     }
     else {
-      var loader = 'sssss';
+      var loader = '';
     }
 
     return (

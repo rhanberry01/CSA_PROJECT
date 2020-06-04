@@ -59,8 +59,8 @@ router.get('/getdeposit', function (req, res, next) {
               LEFT JOIN 0_tendertypes_category as ttc
               ON ot.tender_type_category=ttc.tender_category_id
               where tender_type in ('103','104')
+              and cast(lastdatemodified as date) = CURRENT_DATE()
               ` + qry + `  GROUP BY group_ids 
-              HAVING cast(max(lastdatemodified) as date) = CURRENT_DATE()
               ORDER BY transaction_date desc`;
 
   //var x=0;

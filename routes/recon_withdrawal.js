@@ -9,7 +9,7 @@ router.get('/getdeposit', function (req, res, next) {
 
     var total_query = `SELECT sum(_net_amount) as total FROM cash_deposit2.0_central_sales_audit_header WHERE transaction_type='222' 
           AND branch_code='`+ req.session.branch + `' AND aria_trans_nos IN(` + rows + `)`;
-    console.log('query: ', total_query);
+    //  console.log('query: ', total_query);
     return new Promise(function (resolve, reject) {
       res.locals.aria_connection.query(total_query, (total_err, total_rows) => {
         if (total_err) {
@@ -20,7 +20,7 @@ router.get('/getdeposit', function (req, res, next) {
             // console.log('Result: ', total_rows[i].total);
             resolve(total_rows);
           }
-          console.log(total_rows + `total rows`);
+          // console.log(total_rows + `total rows`);
         }
 
       });
@@ -44,6 +44,7 @@ router.get('/getdeposit', function (req, res, next) {
                `+ qry + ` ORDER BY transaction_date desc`;*/
 
   var queryString = `SELECT 
+              group_concat(memo_) as memo_ ,  
               group_concat(id) as id ,
               SUM(_net_amount) as _net_amount,
               max(cleared) as cleared,
@@ -52,8 +53,8 @@ router.get('/getdeposit', function (req, res, next) {
               CASE WHEN group_id	is null THEN id ELSE group_id END as group_ids
               FROM cash_deposit2.0_sales_withdrawal
               WHERE branch_code='`+ req.session.branch + `' ` + qry + `
-              and cleared IN (0,1) GROUP BY group_ids
-              HAVING cast(max(lastdatemodified) as date) = CURRENT_DATE()
+              and  cast(lastdatemodified as date) = CURRENT_DATE() 
+              GROUP BY group_ids
               ORDER BY transaction_date desc`
 
   // console.log(queryString);
@@ -67,7 +68,7 @@ router.get('/getdeposit', function (req, res, next) {
     // depresult = 0;
     paidresult = 0;
     for (var i in rows) {
-      //console.log('joined ID: ', rows[i].ts_id);
+      //    console.log('joined ID: ', rows[i].id);
       var paidresult = await get_paid(rows[i].id);
       var mydata = _.assign({}, rows[i], { paidtotal: paidresult[0].total });
       //console.log(mydata);
@@ -121,6 +122,7 @@ router.get('/getfilterdeposit', function (req, res, next) {
 
 
   var queryString = `SELECT 
+                    group_concat(memo_) as memo_ ,
                     group_concat(id) as id ,
                     SUM(_net_amount) as _net_amount,
                     max(cleared) as cleared,
@@ -228,21 +230,34 @@ router.get('/getselecteddeposit', function (req, res, next) {
 );
 
 router.get('/getpaymenhistory', function (req, res, next) {
-  res.locals.mysql_connection_91.query(
-    `SELECT 
-      aria_trans_nos as id,
-      transaction_date,
-      aria_trans_gl_code,
-      proof_type_number,
-      _net_amount,
-      memo_,
-      (select description from  cash_deposit2.0_tendertypes where tendercode = tender_code) as tender_code
-    FROM cash_deposit2.0_central_sales_audit_header
-    WHERE aria_trans_nos IN (` + req.query.id + `)`,
+
+  var format = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+  var string = req.query.group_ids;
+  var queryadd = ``;
+  if (string.match(format)) {
+    console.log(`true`);
+    var group_ids = req.query.group_ids;
+    var queryadd = `and group_id IN (` + req.query.group_ids + `)`;
+  } else {
+    console.log(`false`);
+    var group_ids = '';
+  }
+
+  var queryStringhistory = `SELECT 
+  aria_trans_nos as id,
+  transaction_date,
+  (select bank_account_name from  0_all_bank_accounts where account_code = aria_trans_gl_code) as aria_trans_gl_code,
+  proof_type_number,
+  _net_amount,
+  memo_,
+    (select description from  cash_deposit2.0_tendertypes where tendercode = tender_code) as tender_code
+  FROM cash_deposit2.0_central_sales_audit_header
+  WHERE  branch_code='`+ req.session.branch + `' and aria_trans_nos IN (` + req.query.id + `)` + queryadd;
+
+  res.locals.mysql_connection_91.query(queryStringhistory,
     function (error, results, fields) {
       if (error) throw error;
       res.send(JSON.stringify(results));
-      //console.log(req.query);
       //console.log(results);
       // console.log(`SELECT * FROM 0_sales_withdrawal where id IN (`+req.query.id+`)`);
     });

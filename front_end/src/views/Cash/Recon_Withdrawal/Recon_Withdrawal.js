@@ -373,6 +373,7 @@ class Pagis extends React.PureComponent {
     axios.get('http://' + BACKENDIP + ':' + BACKENDPORT + '/reconwithdrawal/getpaymenhistory', {
       params: {
         id: row.id,
+        group_ids: row.group_ids
       }
     })
       .then(res => {
@@ -1033,6 +1034,7 @@ class Pagis extends React.PureComponent {
                         Amount paid : {tPays._net_amount}<br />
                         Memo : {tPays.memo_}<br />
                         Tender :{tPays.tender_code}<br />
+                        Bank : {tPays.aria_trans_gl_code}
                       </h6>))}
                   </Col>
                 </Row>
