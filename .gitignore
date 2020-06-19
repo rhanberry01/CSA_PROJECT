@@ -1,3 +1,4 @@
 node_modules/
 db_config.js
 front_end/src/Database.js
+public/uploads

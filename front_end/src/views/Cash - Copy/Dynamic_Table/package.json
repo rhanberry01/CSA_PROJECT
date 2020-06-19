@@ -1,0 +1,6 @@
+{
+  "name": "Dynamic_Table",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./Dynamic_Table.js"
+}

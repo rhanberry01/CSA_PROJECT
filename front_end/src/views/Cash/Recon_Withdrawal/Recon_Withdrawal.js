@@ -806,6 +806,14 @@ class Pagis extends React.PureComponent {
         headerStyle: { backgroundColor: '#84b3ff' }
       },
       {
+        dataField: 'oitotal',
+        text: 'OtherIncome',
+        sort: true,
+        headerSortingStyle,
+        formatter: amountFormatter,
+        headerStyle: { backgroundColor: '#84b3ff' }
+      },
+      {
         dataField: 'balance',
         isDummyField: true,
         text: 'Balance',
@@ -813,7 +821,7 @@ class Pagis extends React.PureComponent {
         headerSortingStyle,
 
         formatter: (products, row) => {
-          var balance = row._net_amount - row.paidtotal;
+          var balance = row._net_amount - row.paidtotal + row.oitotal;
           return (
             <IntlProvider locale="en"><FormattedNumber value={Math.abs(balance)} /></IntlProvider>
           );
@@ -859,7 +867,10 @@ class Pagis extends React.PureComponent {
         text: 'View',
         formatter: (cellContent, row) => (
           <Button type="submit" outline color="primary" size="sm" onClick={() => this.viewModal(row)}><i className="fa fa-pencil-square-o"></i>&nbsp; View</Button>
-        )
+        ),
+        footerTitle: true,
+        footer: 'Footer 3',
+        footerFormatter: priceFormatter
       }
     ];
     //<Button type="submit" outline color="danger" size="sm" onClick={() => this.handleDelete(row.id)}><i className="fa fa-trash-o"></i>&nbsp; Remove</Button>
@@ -888,20 +899,21 @@ class Pagis extends React.PureComponent {
     const transtype = this.state.tSelected.map((tSelected) => tSelected.transaction_type);
     //console.log(transtype);
 
-    if (transtype == '207' || transtype == '208') {
-      var oiamount = Math.abs(totalselected - this.state.otherincome);
+    var oiamount = 0;
+    var chk_oi = ((totalselected - totalpaid) - this.state.otherincome).toFixed(2);
+    //console.log(chk_oi, ` ooiii`)
+    if (chk_oi < 0) {
+      var oiamount = Math.abs((totalselected - totalpaid) - this.state.otherincome).toFixed(2);
+      console.log(this.state.otherincome + `---test`);
       var otherincome =
         (<Col sm="6">
           <h6 className="text-success">Other Income: <IntlProvider locale="en">
-            <FormattedNumber value={Math.abs(totalselected - this.state.otherincome)} />
+            <FormattedNumber value={oiamount} />
           </IntlProvider>
           </h6>
         </Col>);
     }
-    else {
-      var otherincome = '';
-      var oiamount = 0;
-    }
+
 
 
     var notifyZero = "zero, empty and negative amount are invalid!";
@@ -1032,6 +1044,7 @@ class Pagis extends React.PureComponent {
                         Payment Reference #:  {tPays.id}<br />
                         Date paid : {moment(tPays.transaction_date).format('YYYY-MM-DD')}<br />
                         Amount paid : {tPays._net_amount}<br />
+                        Other Income : {tPays._oi_amount}<br />
                         Memo : {tPays.memo_}<br />
                         Tender :{tPays.tender_code}<br />
                         Bank : {tPays.aria_trans_gl_code}

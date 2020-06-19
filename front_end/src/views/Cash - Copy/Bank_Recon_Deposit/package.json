@@ -1,0 +1,6 @@
+{
+  "name": "Bank_Recon_Deposit",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./Bank_Recon_Deposit.js"
+}

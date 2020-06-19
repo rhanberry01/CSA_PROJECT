@@ -255,7 +255,7 @@ router.get('/getpaymenhistory', function (req, res, next) {
 
   res.locals.mysql_connection_91.query(
     `SELECT transaction_date,
-      aria_trans_gl_code,
+    (select bank_account_name from  0_all_bank_accounts where account_code = aria_trans_gl_code) as aria_trans_gl_code,
       proof_type_number,
       _net_amount,
       memo_,

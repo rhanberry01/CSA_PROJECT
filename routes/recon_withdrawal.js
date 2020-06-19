@@ -7,9 +7,9 @@ router.get('/getdeposit', function (req, res, next) {
 
   function get_paid(rows) {
 
-    var total_query = `SELECT sum(_net_amount) as total FROM cash_deposit2.0_central_sales_audit_header WHERE transaction_type='222' 
+    var total_query = `SELECT sum(_net_amount) as total,sum(_oi_amount) as _oi_amount FROM cash_deposit2.0_central_sales_audit_header WHERE transaction_type='222' 
           AND branch_code='`+ req.session.branch + `' AND aria_trans_nos IN(` + rows + `)`;
-    //  console.log('query: ', total_query);
+    //console.log('query: ', total_query);
     return new Promise(function (resolve, reject) {
       res.locals.aria_connection.query(total_query, (total_err, total_rows) => {
         if (total_err) {
@@ -70,7 +70,7 @@ router.get('/getdeposit', function (req, res, next) {
     for (var i in rows) {
       //    console.log('joined ID: ', rows[i].id);
       var paidresult = await get_paid(rows[i].id);
-      var mydata = _.assign({}, rows[i], { paidtotal: paidresult[0].total });
+      var mydata = _.assign({}, rows[i], { paidtotal: paidresult[0].total, oitotal: paidresult[0]._oi_amount });
       //console.log(mydata);
       arr.push(mydata);
     }
@@ -84,7 +84,7 @@ router.get('/getdeposit', function (req, res, next) {
 
 router.get('/getfilterdeposit', function (req, res, next) {
   function get_paid(rows) {
-    var total_query = `SELECT sum(_net_amount) as total FROM cash_deposit2.0_central_sales_audit_header WHERE transaction_type='222' 
+    var total_query = `SELECT sum(_net_amount) as total,sum(_oi_amount) as _oi_amount FROM cash_deposit2.0_central_sales_audit_header WHERE transaction_type='222' 
                 AND branch_code='`+ req.session.branch + `' AND aria_trans_nos IN(` + rows + `)`;
     //  console.log('query: ', total_query);
     return new Promise(function (resolve, reject) {
@@ -151,7 +151,7 @@ router.get('/getfilterdeposit', function (req, res, next) {
     for (var i in rows) {
       //console.log('joined ID: ', rows[i].ts_id);
       var paidresult = await get_paid(rows[i].id);
-      var mydata = _.assign({}, rows[i], { paidtotal: paidresult[0].total });
+      var mydata = _.assign({}, rows[i], { paidtotal: paidresult[0].total, oitotal: paidresult[0]._oi_amount });
       //console.log(mydata);
       arr.push(mydata);
     }
@@ -249,6 +249,7 @@ router.get('/getpaymenhistory', function (req, res, next) {
   (select bank_account_name from  0_all_bank_accounts where account_code = aria_trans_gl_code) as aria_trans_gl_code,
   proof_type_number,
   _net_amount,
+  _oi_amount,
   memo_,
     (select description from  cash_deposit2.0_tendertypes where tendercode = tender_code) as tender_code
   FROM cash_deposit2.0_central_sales_audit_header
@@ -268,8 +269,18 @@ router.get('/getpaymenhistory', function (req, res, next) {
 
 router.post('/adddeposit', function (req, res, next) {
 
-  var paid_stats = math.round(req.body.t_receivable, 2) - (math.round(req.body.amount, 2) + math.round(req.body.t_paid, 2));
-  var stats = math.round(paid_stats);
+  var paid_stats = math.round(req.body.t_receivable, 2) - (math.round(req.body.amount, 2) + (math.round(req.body.t_paid, 2) - math.round(req.body.t_otherincome, 2)));
+  var stats = paid_stats.toFixed(2);
+
+  /*
+    console.log(`stats...`, math.round(req.body.t_receivable, 2));
+    console.log(`stats...`, (math.round(req.body.amount, 2)));
+    console.log(`stats...`, math.round(req.body.t_paid, 2));
+    console.log(`stats...`, math.round(req.body.t_otherincome, 2));
+  
+  
+    console.log(`stats...`, stats);
+  */
 
   var vat = math.abs(math.round((req.body.t_otherincome / 1.12) - req.body.t_otherincome, 2));
 
@@ -278,13 +289,14 @@ router.post('/adddeposit', function (req, res, next) {
   //console.log(math.round(req.body.t_paid, 2));
   //console.log(math.round(math.abs(paid_stats), 2));
   //console.log(stats);
+
   res.locals.mysql_connection_91.query(`INSERT INTO 0_sales_withdrawal_group (group_or,group_type) VALUES ('` + req.body.selected_ids + `','222')`,
     function (error, resultsg, fields) {
       if (error) throw error;
 
       res.locals.mysql_connection_91.query(`INSERT INTO cash_deposit2.0_central_sales_audit_header(_net_amount,memo_,transaction_date,date_created,deposit_date,transaction_type,aria_trans_gl_code,process_type, aria_trans_nos, branch_code, created_by, _oi_amount, _vat_amount,group_id) 
-      VALUES(` + req.body.amount + `,'` + req.body.memo + `','` + req.body.date_created + `','` + req.body.date_created + `','` + req.body.date_created + `',
-      '222',` + req.body.aria_trans_gl_code + `,'1','` + req.body.selected_ids + `','` + req.session.branch + `','` + req.session.userId + `', ` + req.body.t_otherincome + `,  ` + vat + `,` + resultsg.insertId + `)`, function (error, results, fields) {
+        VALUES(` + req.body.amount + `,'` + req.body.memo + `','` + req.body.date_created + `','` + req.body.date_created + `','` + req.body.date_created + `',
+        '222',` + req.body.aria_trans_gl_code + `,'1','` + req.body.selected_ids + `','` + req.session.branch + `','` + req.session.userId + `', ` + req.body.t_otherincome + `,  ` + vat + `,` + resultsg.insertId + `)`, function (error, results, fields) {
         if (error) throw error;
         //console.log(results.insertId);
 
@@ -385,7 +397,7 @@ router.get('/getsalescash', function (req, res, next) {
   res.locals.mysql_connection_91.query("select sum(total_cash) as cash from 0_remittance_summary where r_summary_date = '" + req.query.remittance_date + "'", function (error, results, fields) {
     if (error) throw error;
     res.send(JSON.stringify(results));
-    console.log(req.query.remittance_date);
+    //  console.log(req.query.remittance_date);
   });
 });
 
