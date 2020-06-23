@@ -251,7 +251,7 @@ router.get('/getselecteddeposit', function (req, res, next) {
 
 
 router.get('/getpaymenhistory', function (req, res, next) {
-  console.log(`SELECT * FROM cash_deposit2.0_central_sales_audit_header WHERE aria_trans_nos IN (` + req.query.id + `)`);
+  console.log(`SELECT * FROM cash_deposit2.0_central_sales_audit_header WHERE branch_code='` + req.session.branch + ` 'aria_trans_nos IN (` + req.query.id + `)`);
 
   res.locals.mysql_connection_91.query(
     `SELECT transaction_date,
@@ -261,7 +261,7 @@ router.get('/getpaymenhistory', function (req, res, next) {
       memo_,
       (select description from  cash_deposit2.0_tendertypes where tendercode = tender_code) as tender_code
     FROM cash_deposit2.0_central_sales_audit_header
-    WHERE aria_trans_nos IN (` + req.query.id + `)`,
+    WHERE branch_code='`+ req.session.branch + `  and aria_trans_nos IN (` + req.query.id + `)`,
     function (error, results, fields) {
       if (error) throw error;
       res.send(JSON.stringify(results));
