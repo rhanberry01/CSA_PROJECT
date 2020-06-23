@@ -265,7 +265,7 @@ router.get('/getpaymenhistory', function (req, res, next) {
     function (error, results, fields) {
       if (error) throw error;
       res.send(JSON.stringify(results));
-      // console.log(req.query);
+      console.log(req.query);
       //console.log(results);
       // console.log(`SELECT * FROM 0_sales_withdrawal where id IN (`+req.query.id+`)`);
     });
