@@ -713,28 +713,32 @@ class Pagis extends React.PureComponent {
         align: 'center',
         headerStyle: { backgroundColor: '#84b3ff' },
         // filter: textFilter(),
-        headerFormatter: priceFormatter //to put title down
+        headerFormatter: priceFormatter,
+        footer: "Total" //to put title down
       },
       {
         dataField: 'transaction_date',
         text: 'Sales Date',
         sort: true,
         headerSortingStyle,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: ""
       },
       {
         dataField: 'account_name',
         text: 'Name',
         sort: true,
         headerSortingStyle,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: ""
       },
       {
         dataField: 'category_desc',
         text: 'Transaction',
         sort: true,
         headerSortingStyle,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: ""
       },
       {
         dataField: 'trans_amount',
@@ -742,7 +746,8 @@ class Pagis extends React.PureComponent {
         sort: true,
         headerSortingStyle,
         formatter: amountFormatter,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: columnData => columnData.reduce((acc, item) => acc + item, 0)
       },
       {
         dataField: 'paidtotal',
@@ -750,7 +755,8 @@ class Pagis extends React.PureComponent {
         sort: true,
         headerSortingStyle,
         formatter: amountFormatter,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: columnData => columnData.reduce((acc, item) => acc + item, 0)
       },
       {
         dataField: 'balance',
@@ -775,27 +781,32 @@ class Pagis extends React.PureComponent {
 
         },
 
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        //  footer: products.map((items, num) => num)
+        // footer: columnData => columnData.reduce((acc, item) => acc + item, 0)
       },
       {
         dataField: 'card_desc',
         text: 'Memo',
         sort: true,
         headerSortingStyle,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: ""
       },
       {
         dataField: 'reconciled',
         text: 'Status',
         formatter: statusFormatter,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: ""
       },
       {
         dataField: 'View',
         text: 'View',
         formatter: (cellContent, row) => (
           <Button type="submit" outline color="primary" size="sm" onClick={() => this.viewModal(row)}><i className="fa fa-pencil-square-o"></i>&nbsp; View</Button>
-        )
+        ),
+        footer: ""
       }
     ];
     /*
@@ -904,7 +915,6 @@ class Pagis extends React.PureComponent {
                         </Input>
                       </FormGroup>
                     </Col>
-
                     <Col sm="6">
                       <FormGroup>
                         <Label htmlFor="amount">Amount to Pay:</Label>
@@ -912,6 +922,13 @@ class Pagis extends React.PureComponent {
                           {notifyZero}
                         </Alert>
                         <Input type="number" id="amount" name="amount" placeholder="Enter Amount.." value={this.state.amount} onChange={this.handleChange} />
+                      </FormGroup>
+                    </Col>
+                    <Col sm="6">
+                      <FormGroup>
+                        <input type="radio" value="Male" name="gender" /> EWT
+                          <input type="radio" value="Female" name="gender" /> OP
+                          <input type="radio" value="Other" name="gender" /> OI
                       </FormGroup>
                     </Col>
                   </Row>

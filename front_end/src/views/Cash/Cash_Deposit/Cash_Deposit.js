@@ -10,6 +10,7 @@ import {
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
+import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import { IntlProvider, FormattedMessage, FormattedNumber } from 'react-intl';
 import Spinner from 'react-spinkit';
 import Loadable from 'react-loadable';
@@ -1041,7 +1042,8 @@ class Pagis extends React.PureComponent {
         text: 'Branch',
         sort: true,
         headerSortingStyle,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: "Total : "
       },
       {
         dataField: 'id',
@@ -1051,7 +1053,8 @@ class Pagis extends React.PureComponent {
         align: 'center',
         headerStyle: { backgroundColor: '#84b3ff' },
         // filter: textFilter(),
-        headerFormatter: priceFormatter //to put title down
+        headerFormatter: priceFormatter,//to put title down
+        footer: ""
       },
       {
         dataField: 'transaction_date',
@@ -1059,7 +1062,8 @@ class Pagis extends React.PureComponent {
         sort: true,
         headerSortingStyle,
         formatter: dateFormatter,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: ""
       },
       {
         dataField: 'deposit_date',
@@ -1067,14 +1071,16 @@ class Pagis extends React.PureComponent {
         sort: true,
         headerSortingStyle,
         formatter: dateFormatter,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: ""
       },
       {
         dataField: 'name',
         text: 'Type',
         sort: true,
         headerSortingStyle,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: ""
       },
       {
         dataField: '_net_amount',
@@ -1082,27 +1088,31 @@ class Pagis extends React.PureComponent {
         sort: true,
         headerSortingStyle,
         formatter: amountFormatter,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: columnData => columnData.reduce((acc, item) => acc + item, 0)
       },
       {
         dataField: 'memo_',
         text: 'Memo',
         sort: true,
         headerSortingStyle,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: ""
       },
       {
         dataField: 'reconciled',
         text: 'Status',
         formatter: statusFormatter,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: ""
       },
       {
         dataField: 'banks',
         text: 'Banks',
         sort: true,
         headerSortingStyle,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: ""
       },
       {
         dataField: 'Update',
@@ -1120,7 +1130,8 @@ class Pagis extends React.PureComponent {
             );
           }
 
-        }
+        },
+        footer: ""
       },
       {
         dataField: 'Delete',
@@ -1137,14 +1148,16 @@ class Pagis extends React.PureComponent {
               <Button type="submit" outline color="secondary" size="sm" onClick={() => this.handleDelete(row)} disabled><i className="fa fa-trash-o"></i>&nbsp; Remove</Button>
             );
           }
-        }
+        },
+        footer: ""
       },
       {
         dataField: 'View',
         text: 'View',
         formatter: (cellContent, row) => (
           <Button type="submit" outline color="dark" size="sm" onClick={() => this.viewImage(row)}><i className="fa fa-file-image-o"></i>&nbsp; Slip</Button>
-        )
+        ),
+        footer: ""
       }
     ];
     //<Button type="submit" outline color="danger" size="sm" onClick={() => this.handleDelete(row.id)}><i className="fa fa-trash-o"></i>&nbsp; Remove</Button>
@@ -1215,7 +1228,6 @@ class Pagis extends React.PureComponent {
     else {
       var imgloader = '';
     }
-
 
 
     return (
@@ -1327,6 +1339,7 @@ class Pagis extends React.PureComponent {
             </Card>
           </ModalBody>
         </Modal>
+
 
         {/* START OF TABLE ToolkitProvider*/}
         <ToolkitProvider

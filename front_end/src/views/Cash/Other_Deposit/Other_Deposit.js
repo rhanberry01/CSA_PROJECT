@@ -813,7 +813,8 @@ class Pagis extends React.PureComponent {
         text: 'Branch',
         sort: true,
         headerSortingStyle,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: "Total:"
       },
       {
         dataField: 'id',
@@ -823,7 +824,8 @@ class Pagis extends React.PureComponent {
         align: 'center',
         headerStyle: { backgroundColor: '#84b3ff' },
         // filter: textFilter(),
-        headerFormatter: priceFormatter //to put title down
+        headerFormatter: priceFormatter, //to put title down
+        footer: ""
       },
       {
         dataField: 'date_created',
@@ -831,7 +833,8 @@ class Pagis extends React.PureComponent {
         sort: true,
         headerSortingStyle,
         formatter: dateFormatter,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: ""
       },
       {
         dataField: 'transaction_date',
@@ -839,14 +842,16 @@ class Pagis extends React.PureComponent {
         sort: true,
         headerSortingStyle,
         formatter: dateFormatter,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: ""
       },
       {
         dataField: 'name',
         text: 'Type',
         sort: true,
         headerSortingStyle,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: ""
       },
       {
         dataField: '_net_amount',
@@ -854,20 +859,23 @@ class Pagis extends React.PureComponent {
         sort: true,
         headerSortingStyle,
         formatter: amountFormatter,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: columnData => columnData.reduce((acc, item) => acc + item, 0)
       },
       {
         dataField: 'memo_',
         text: 'Memo',
         sort: true,
         headerSortingStyle,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: ""
       },
       {
         dataField: 'reconciled',
         text: 'Status',
         formatter: statusFormatter,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: ""
       },
       {
         dataField: 'Update',
@@ -885,7 +893,8 @@ class Pagis extends React.PureComponent {
             );
           }
 
-        }
+        },
+        footer: ""
       },
       {
         dataField: 'Delete',
@@ -902,7 +911,8 @@ class Pagis extends React.PureComponent {
               <Button type="submit" outline color="secondary" size="sm" onClick={() => this.handleDelete(row)} disabled><i className="fa fa-trash-o"></i>&nbsp; Remove</Button>
             );
           }
-        }
+        },
+        footer: ""
       }
     ];
     //<Button type="submit" outline color="danger" size="sm" onClick={() => this.handleDelete(row.id)}><i className="fa fa-trash-o"></i>&nbsp; Remove</Button>

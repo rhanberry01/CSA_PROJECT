@@ -508,6 +508,7 @@ class Pagis extends React.PureComponent {
           t_receivable: e.target.t_receivable.value,
           t_paid: e.target.t_paid.value,
           t_otherincome: e.target.t_otherincome.value,
+          transtype: e.target.transtype.value,
         };
 
         /*
@@ -542,7 +543,7 @@ class Pagis extends React.PureComponent {
           t_receivable: Deposit.t_receivable,
           t_paid: Deposit.t_paid,
           t_otherincome: Deposit.t_otherincome,
-
+          transtype: e.target.transtype.value,
         })
           .then(res => {
 
@@ -773,21 +774,24 @@ class Pagis extends React.PureComponent {
         align: 'center',
         headerStyle: { backgroundColor: '#84b3ff' },
         // filter: textFilter(),
-        headerFormatter: priceFormatter //to put title down
+        headerFormatter: priceFormatter, //to put title down
+        footer: "Total:"
       },
       {
         dataField: 'date_created',
         text: 'Withdrawal Date',
         sort: true,
         headerSortingStyle,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: ""
       },
       {
         dataField: 'transaction_date',
         text: 'Sales Date',
         sort: true,
         headerSortingStyle,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: ""
       },
       {
         dataField: '_net_amount',
@@ -795,7 +799,9 @@ class Pagis extends React.PureComponent {
         sort: true,
         headerSortingStyle,
         formatter: amountFormatter,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+
+        footer: columnData => columnData.reduce((acc, item) => acc + item, 0)
       },
       {
         dataField: 'paidtotal',
@@ -803,7 +809,8 @@ class Pagis extends React.PureComponent {
         sort: true,
         headerSortingStyle,
         formatter: amountFormatter,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: columnData => columnData.reduce((acc, item) => acc + item, 0)
       },
       {
         dataField: 'oitotal',
@@ -811,7 +818,8 @@ class Pagis extends React.PureComponent {
         sort: true,
         headerSortingStyle,
         formatter: amountFormatter,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: columnData => columnData.reduce((acc, item) => acc + item, 0).toFixed(2)
       },
       {
         dataField: 'balance',
@@ -828,20 +836,23 @@ class Pagis extends React.PureComponent {
 
         },
 
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: ""
       },
       {
         dataField: 'memo_',
         text: 'Memo',
         sort: true,
         headerSortingStyle,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: ""
       },
       {
         dataField: 'reconciled',
         text: 'Status',
         formatter: statusFormatter,
-        headerStyle: { backgroundColor: '#84b3ff' }
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: ""
 
       },
       {
@@ -860,7 +871,8 @@ class Pagis extends React.PureComponent {
             );
           }
 
-        }
+        },
+        footer: ""
       },
       {
         dataField: 'View',
@@ -868,8 +880,7 @@ class Pagis extends React.PureComponent {
         formatter: (cellContent, row) => (
           <Button type="submit" outline color="primary" size="sm" onClick={() => this.viewModal(row)}><i className="fa fa-pencil-square-o"></i>&nbsp; View</Button>
         ),
-        footerTitle: true,
-        footer: 'Footer 3',
+        footer: "",
         footerFormatter: priceFormatter
       }
     ];
@@ -897,14 +908,14 @@ class Pagis extends React.PureComponent {
 
 
     const transtype = this.state.tSelected.map((tSelected) => tSelected.transaction_type);
-    //console.log(transtype);
+
 
     var oiamount = 0;
     var chk_oi = ((totalselected - totalpaid) - this.state.otherincome).toFixed(2);
     //console.log(chk_oi, ` ooiii`)
     if (chk_oi < 0) {
       var oiamount = Math.abs((totalselected - totalpaid) - this.state.otherincome).toFixed(2);
-      console.log(this.state.otherincome + `---test`);
+      // console.log(this.state.otherincome + `---test`);
       var otherincome =
         (<Col sm="6">
           <h6 className="text-success">Other Income: <IntlProvider locale="en">
@@ -914,6 +925,20 @@ class Pagis extends React.PureComponent {
         </Col>);
     }
 
+    if (transtype != '207') {
+      var Banks = (<Col xs="6">
+        <FormGroup>
+          <Label htmlFor="bankdropdown">Bank Account:</Label>
+          <Input type="select" name="aria_trans_gl_code" id="aria_trans_gl_code" value={this.state.aria_trans_gl_code} onChange={this.handlebanktypeChange}>
+            {this.state.Banks.map((Banks, i) => <option key={Banks.account_code} value={Banks.account_code}>{Banks.bank_account_name}</option>)}
+          </Input>
+        </FormGroup>
+      </Col>);
+
+    } else {
+      var Banks = "";
+      this.setState({ amount: totalselected })
+    }
 
 
     var notifyZero = "zero, empty and negative amount are invalid!";
@@ -960,6 +985,7 @@ class Pagis extends React.PureComponent {
                       </h6>
 
                       <FormGroup>
+                        <Input type="hidden" id="transtype" name="transtype" value={transtype} />
                         <Input type="hidden" id="bal" name="bal" value={totalselected} />
                         <Input type="hidden" id="selected_ids" name="selected_ids" value={this.state.selectedx} />
                         <Input type="hidden" id="t_receivable" name="t_receivable" value={totalselected} />
@@ -987,15 +1013,7 @@ class Pagis extends React.PureComponent {
                         </Input>
                       </FormGroup>
                     </Col>
-                    <Col xs="6">
-                      <FormGroup>
-                        <Label htmlFor="bankdropdown">Bank Account:</Label>
-                        <Input type="select" name="aria_trans_gl_code" id="aria_trans_gl_code" value={this.state.aria_trans_gl_code} onChange={this.handlebanktypeChange}>
-                          {this.state.Banks.map((Banks, i) => <option key={Banks.account_code} value={Banks.account_code}>{Banks.bank_account_name}</option>)}
-                        </Input>
-                      </FormGroup>
-                    </Col>
-
+                    {Banks}
                     <Col sm="6">
                       <FormGroup>
                         <Label htmlFor="amount">Amount to Return:</Label>
