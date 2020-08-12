@@ -155,6 +155,11 @@ class Pagis extends React.PureComponent {
       tendercode: '0',
       memo: '',
       loading: true,
+      overpayment: '',
+      selectedOption: '',
+      overtype: '',
+      otherincome: '',
+      overtypename: ''
     };
 
     this.toggle = this.toggle.bind(this);
@@ -163,6 +168,8 @@ class Pagis extends React.PureComponent {
     this.viewModal = this.viewModal.bind(this);
     this.closeModalView = this.closeModalView.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.onChangeRadioValue = this.onChangeRadioValue.bind(this);
+    this.handleAmountChange = this.handleAmountChange.bind(this);
     this.handleSalesDateChange = this.handleSalesDateChange.bind(this);
     this.handleDepositDateChange = this.handleDepositDateChange.bind(this);
     this.handledeptypeChange = this.handledeptypeChange.bind(this);
@@ -400,6 +407,25 @@ class Pagis extends React.PureComponent {
     // console.log(this.state.value);
   }
 
+
+
+
+  onChangeRadioValue(e) {
+    // check it out: we get the evt.target.name (which will be either "email" or "password")
+    // and use it to target the key on our `state` object with the same name, using bracket syntax
+    this.setState({ selectedOption: e.target.value });
+    this.setState({ overtypename: e.target.name });
+    this.setState({ overtype: e.target.value });
+    //console.log(e.target.value);
+  }
+
+  handleAmountChange(e) {
+    // check it out: we get the evt.target.name (which will be either "email" or "password")
+    // and use it to target the key on our `state` object with the same name, using bracket syntax
+    this.setState({ amount: e.target.value, otherincome: e.target.value });
+    //console.log(this.state.value);
+  }
+
   handledeptypeChange(e) {
     this.setState({ transaction_detail_type: e.target.value });
   }
@@ -460,7 +486,10 @@ class Pagis extends React.PureComponent {
           aria_trans_gl_code: this.state.aria_trans_gl_code,
           tendercode: this.state.tendercode,
           t_receivable: e.target.t_receivable.value,
+          t_otherincome: e.target.t_otherincome.value,
+          overtype: e.target.overtype.value,
           t_paid: e.target.t_paid.value,
+          due_to_customer: e.target.due_to_customer.value
         };
 
         //console.log(Deposit);
@@ -477,6 +506,9 @@ class Pagis extends React.PureComponent {
           sales_date: moment(Deposit.depositDate).format('YYYY-MM-DD'),
           trans_type: Deposit.trans_type,
           t_receivable: Deposit.t_receivable,
+          t_otherincome: Deposit.t_otherincome,
+          due_to_customer: Deposit.due_to_customer,
+          overtype: Deposit.overtype,
           t_paid: Deposit.t_paid,
           ref: Deposit.ref,
         })
@@ -495,19 +527,12 @@ class Pagis extends React.PureComponent {
               this.setState({ toRedirect: true });
             })
 
-            /*
-            Swal(
-              'Successful!',
-              'Your deposit has been Added.',
-              'success'
-            );
-            */
-            // this.props.history.push("/sales/sales_audit")
+
 
           })
       }
     }
-      //}
+
     )
   }
 
@@ -701,7 +726,7 @@ class Pagis extends React.PureComponent {
     const { ExportCSVButton } = CSVExport;
 
     const products = this.state.Deposits;
-    console.log(products);
+    // console.log(products);
     //start of sorting
     const headerSortingStyle = { backgroundColor: '#428aff' };
     const columns = [
@@ -759,6 +784,34 @@ class Pagis extends React.PureComponent {
         footer: columnData => columnData.reduce((acc, item) => acc + item, 0)
       },
       {
+        dataField: '_ewt',
+        text: 'EWT',
+        sort: true,
+        headerSortingStyle,
+        formatter: amountFormatter,
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: columnData => columnData.reduce((acc, item) => acc + item, 0)
+      },
+      {
+        dataField: '_oi_amount',
+        text: 'Other Income',
+        sort: true,
+        headerSortingStyle,
+        formatter: amountFormatter,
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: columnData => columnData.reduce((acc, item) => acc + item, 0)
+      },
+      ,
+      {
+        dataField: 'due_to_customer',
+        text: 'Over Payment',
+        sort: true,
+        headerSortingStyle,
+        formatter: amountFormatter,
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: columnData => columnData.reduce((acc, item) => acc + item, 0)
+      },
+      {
         dataField: 'balance',
         isDummyField: true,
         text: 'Balance',
@@ -766,7 +819,8 @@ class Pagis extends React.PureComponent {
         headerSortingStyle,
 
         formatter: (products, row) => {
-          var balance = row.trans_amount - row.paidtotal;
+          var balance = row.trans_amount - row.paidtotal + row._oi_amount - row._ewt + row.due_to_customer;
+          // console.log(row.due_to_customer);
           if (balance < 0) {
             return (
               <IntlProvider locale="en"><FormattedNumber value={balance} /></IntlProvider>
@@ -825,8 +879,58 @@ class Pagis extends React.PureComponent {
       order: 'desc'
     }];
 
+
+
     const totalselected = this.state.tSelected.reduce((accumulator, tSelected) => accumulator + tSelected.trans_amount, 0);
     const totalpaid = this.state.tWith.map((tWith, i) => tWith.total_paid)
+    const due_to_customer = this.state.tWith.map((tWith, i) => tWith.due_to_customer)
+
+    var oiamount = 0;
+    var overtype = this.state.overtype;
+    var chk_oi = ((totalselected - totalpaid) - this.state.otherincome).toFixed(2);
+
+    var stat = 0;
+    switch (this.state.overtype) {
+      case 'wt': // ewt 
+        var val = totalselected * 0.01;
+        var stat = 1;
+        // console.log(val + "ewt");
+        break;
+      case 'ot': // otherincome
+        var chk_oi = ((totalselected - totalpaid) - this.state.otherincome).toFixed(2);
+        if (chk_oi < 0) {
+          var val = Math.abs((totalselected - totalpaid) - this.state.otherincome).toFixed(2);
+          var stat = 1;
+        } else {
+          var stat = 0;
+        }
+        //   console.log(val + "otherincome");
+        break;
+      case 'ov': // overpayement
+        var chk_oi = ((totalselected - totalpaid) - this.state.otherincome).toFixed(2);
+        if (chk_oi < 0) {
+          var val = Math.abs((totalselected - totalpaid) - this.state.otherincome).toFixed(2);
+          var stat = 1;
+        } else {
+          var stat = 0;
+        }
+      // console.log(val + "overpayement");
+    }
+
+    if (stat == 1) {
+      oiamount = Math.abs(val).toFixed(2);
+      var overpayment =
+        (<Col sm="3">
+          <h6 className="text-success"> {this.state.overtypename} <IntlProvider locale="en">
+            <FormattedNumber value={oiamount} />
+          </IntlProvider>
+          </h6>
+        </Col>);
+    }
+
+
+
+
     var notifyZero = "zero, empty and negative amount are invalid!";
 
     if (this.state.toRedirect === true) {
@@ -848,10 +952,14 @@ class Pagis extends React.PureComponent {
       var loader = '';
     }
 
+    if (due_to_customer != 0) {
+      this.state.amount = due_to_customer;
+    }
+
     return (
       <div>
 
-        <Modal isOpen={this.state.modal} toggle={this.toggle} className={'modal-success ' + this.props.className} external={externalCloseBtn} backdrop="static">
+        <Modal isOpen={this.state.modal} size="lg" toggle={this.toggle} className={'modal-success ' + this.props.className} external={externalCloseBtn} backdrop="static">
           <ModalHeader toggle={this.toggle}>Cash Receivables</ModalHeader>
           <ModalBody>
             <Card>
@@ -878,15 +986,22 @@ class Pagis extends React.PureComponent {
                         <FormattedNumber value={totalselected - totalpaid} />
                       </IntlProvider>
                       </h6>
+                      <h6>Over Payment: <IntlProvider locale="en">
+                        <FormattedNumber value={due_to_customer} />
+                      </IntlProvider>
+                      </h6>
                       <FormGroup>
                         <Input type="hidden" id="sales_date" name="sales_date" value={this.state.tSelected.map((tSelected, i) => tSelected.transaction_date)} />
                         <Input type="hidden" id="trans_type" name="trans_type" value={this.state.tSelected.map((tSelected, i) => tSelected.tender_type)} />
                         <Input type="hidden" id="t_receivable" name="t_receivable" value={totalselected} />
                         <Input type="hidden" id="t_paid" name="t_paid" value={totalpaid} />
                         <Input type="hidden" id="selected_ids" name="selected_ids" value={this.state.selectedx} />
+                        <Input type="hidden" id="t_otherincome" name="t_otherincome" value={oiamount} />
+                        <Input type="hidden" id="overtype" name="overtype" value={overtype} />
+                        <Input type="hidden" id="due_to_customer" name="due_to_customer" value={due_to_customer} />
                       </FormGroup>
                     </Col>
-                  </Row>
+                  </Row >
                   <hr />
                   <Row>
                     <Col xs="6">
@@ -915,31 +1030,47 @@ class Pagis extends React.PureComponent {
                         </Input>
                       </FormGroup>
                     </Col>
+                  </Row>
+                  <Row>
                     <Col sm="6">
                       <FormGroup>
                         <Label htmlFor="amount">Amount to Pay:</Label>
                         <Alert color="danger" isOpen={this.state.visiblealert} toggle={this.onAlert}>
                           {notifyZero}
                         </Alert>
-                        <Input type="number" id="amount" name="amount" placeholder="Enter Amount.." value={this.state.amount} onChange={this.handleChange} />
+                        <Input type="number" id="amount" name="amount" placeholder="Enter Amount.." value={this.state.amount} onChange={this.handleAmountChange} />
                       </FormGroup>
                     </Col>
-                    <Col sm="6">
+                    <Col xs="6">
+                      <Label htmlFor="ref">Ref#, Check#, DM#, OR#</Label>
+                      <Input type="text" id="ref" name="ref" placeholder="Enter Reference Num.." onChange={this.handleChange} />
+                    </Col>
+                  </Row>
+                  <Row >
+                    <Col xs="2">
                       <FormGroup>
-                        <input type="radio" value="Male" name="gender" /> EWT
-                          <input type="radio" value="Female" name="gender" /> OP
-                          <input type="radio" value="Other" name="gender" /> OI
+                        <input type="radio" value="wt" name="WITH EWT : " checked={this.state.selectedOption === "wt"} onChange={this.onChangeRadioValue} /> EWT
                       </FormGroup>
                     </Col>
+                    <Col xs="4">
+                      <FormGroup>
+                        <input type="radio" value="ot" name="OTHER INCOME :" checked={this.state.selectedOption === "ot"} onChange={this.onChangeRadioValue} /> Other Income(Cashier Overage)
+                      </FormGroup>
+                    </Col>
+                    <Col xs="4">
+                      <FormGroup>
+                        <input type="radio" value="ov" name="OVERPAYMENT : " checked={this.state.selectedOption === "ov"} onChange={this.onChangeRadioValue} /> Over Payment
+                      </FormGroup>
+                    </Col>
+
+                  </Row>
+                  <Col xs="12"> {overpayment}</Col>
+                  <Row >
                   </Row>
                   <FormGroup row>
                     <Col xs="6">
                       <Label htmlFor="memo">Memo:</Label>
                       <Input type="textarea" name="memo" id="memo" rows="3" placeholder="Enter Memo..." value={this.state.memo} onChange={this.handleChange} />
-                    </Col>
-                    <Col xs="6">
-                      <Label htmlFor="ref">Ref#, Check#, DM#, OR#</Label>
-                      <Input type="text" id="ref" name="ref" placeholder="Enter Reference Num.." onChange={this.handleChange} />
                     </Col>
                   </FormGroup>
                   <Row>
@@ -950,11 +1081,11 @@ class Pagis extends React.PureComponent {
                       <Button color="secondary" onClick={this.toggle}>Close</Button>
                     </Col>
                   </Row>
-                </Form>
-              </CardBody>
-            </Card>
-          </ModalBody>
-        </Modal>
+                </Form >
+              </CardBody >
+            </Card >
+          </ModalBody >
+        </Modal >
 
         <Modal isOpen={this.state.modalview} toggle={this.viewModal}
           className={'modal-info ' + this.props.className} external={externalCloseBtnx} backdrop="static">
@@ -974,6 +1105,9 @@ class Pagis extends React.PureComponent {
                           Date paid : {moment(tPay.transaction_date).format('YYYY-MM-DD')}<br />
                           Amount paid : {tPay._net_amount}<br />
                           Memo : {tPay.memo_}<br />
+                          Other Income :{tPay._oi_amount}<br />
+                          EWT :{tPay._ewt}<br />
+                          Due to Customer :{tPay.due_to_customer}<br />
                           Tender :{tPay.tender_code}<br />
                           Bank :{tPay.aria_trans_gl_code}<br />
                       </h6>))}
@@ -1073,7 +1207,7 @@ class Pagis extends React.PureComponent {
 
         </ToolkitProvider>   {/* END OF TABLE ToolkitProvider w/ check row*/}
 
-      </div>
+      </div >
     )
   }
 }

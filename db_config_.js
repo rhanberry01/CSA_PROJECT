@@ -1,6 +1,6 @@
 // db_config.js I made it.
 const dbconfig = {
-  programIP: "192.168.0.141",
+  programIP: "localhost",
   programPort: "8888", //UI port
   backendPort: "40011", //Back-end port
 

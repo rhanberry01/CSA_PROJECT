@@ -140,25 +140,14 @@ app.use(
     origin: [
       "http://" + db_config.programIP + ":" + db_config.programPort,
       "http://localhost:" + db_config.programPort,
-      "http://localhost:5000"
+      "http://srsnetwork.dyndns.org:" + db_config.programPort
     ],
     //riki note: you cant capture the cookies if you use localhost on browser, use IP address.
     credentials: true, // enable set cookie
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE"
   })
 );
-/*
-app.use(function(req, res, next) {
-	//res.header("Access-Control-Allow-Origin", "*");
-	res.header("Access-Control-Allow-Origin", "http://localhost:8888");
-	res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
-	res.header('Access-Control-Allow-Credentials', true);
-	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-	
-	
-	next();
-});
-*/
+
 
 app.use(function (req, res, next) {
   res.setHeader("Set-Cookie", "Secure; SameSite=None");

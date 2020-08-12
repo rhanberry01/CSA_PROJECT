@@ -908,6 +908,8 @@ class Pagis extends React.PureComponent {
 
 
     const transtype = this.state.tSelected.map((tSelected) => tSelected.transaction_type);
+    console.log(totalselected + 'totalselected');
+    console.log(totalpaid + 'totalpaid');
 
 
     var oiamount = 0;
