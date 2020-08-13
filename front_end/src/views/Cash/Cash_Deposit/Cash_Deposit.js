@@ -1277,7 +1277,7 @@ class Pagis extends React.PureComponent {
                       <FormGroup>
                         <Label htmlFor="depositDate">Deposit Date:</Label>
                         {/*} <DatePicker selected={this.state.depositDate} onChange={this.handleDepositDateChange} maxDate={moment()} minDate={moment().subtract(15, "days")}/>*/}
-                        <DatePicker selected={this.state.depositDate} onChange={this.handleDepositDateChange} maxDate={moment()} minDate={moment().subtract(5, "days")} />
+                        <DatePicker selected={this.state.depositDate} onChange={this.handleDepositDateChange} maxDate={moment()} />
                       </FormGroup>
                     </Col>
                   </Row>
