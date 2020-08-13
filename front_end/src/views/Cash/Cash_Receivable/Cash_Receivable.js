@@ -892,7 +892,7 @@ class Pagis extends React.PureComponent {
     var stat = 0;
     switch (this.state.overtype) {
       case 'wt': // ewt 
-        var val = totalselected * 0.01;
+        var val = ((totalselected / 1.12) * 0.01);
         var stat = 1;
         // console.log(val + "ewt");
         break;

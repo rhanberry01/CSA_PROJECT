@@ -1247,7 +1247,7 @@ class Pagis extends React.PureComponent {
                       <FormGroup>
                         <Label htmlFor="salesDate">Sales Date:</Label>
                         {/* <DatePicker selected={this.state.salesDate} onChange={this.handleSalesDateChange} maxDate={moment()} minDate={moment().subtract(15, "days")} disabled={true}/> */}
-                        <DatePicker selected={this.state.salesDate} onChange={this.handleSalesDateChange} maxDate={moment()} minDate={moment().subtract(5, "days")} disabled={true} />
+                        <DatePicker selected={this.state.salesDate} onChange={this.handleSalesDateChange} maxDate={moment()} disabled={true} />
                       </FormGroup>
                     </Col>
                     <Col xs="6">
