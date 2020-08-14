@@ -242,7 +242,7 @@ router.get('/getpaymenhistory', function (req, res, next) {
     console.log(`false`);
     var group_ids = '';
   }
-
+  var trans_type_query = "and transaction_type ='222' ";
   var queryStringhistory = `SELECT 
   aria_trans_nos as id,
   transaction_date,
@@ -253,7 +253,7 @@ router.get('/getpaymenhistory', function (req, res, next) {
   memo_,
     (select description from  cash_deposit2.0_tendertypes where tendercode = tender_code) as tender_code
   FROM cash_deposit2.0_central_sales_audit_header
-  WHERE  branch_code='`+ req.session.branch + `' and aria_trans_nos IN (` + req.query.id + `)` + queryadd;
+  WHERE  branch_code='`+ req.session.branch + `' and aria_trans_nos IN (` + req.query.id + `)` + queryadd + trans_type_query;
 
   res.locals.mysql_connection_91.query(queryStringhistory,
     function (error, results, fields) {
