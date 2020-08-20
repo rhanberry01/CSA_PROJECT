@@ -385,7 +385,7 @@ router.delete('/deletedeposit', function (req, res, next) {
   res.locals.mysql_connection_91.query(selectdelid, function (error, results, fields) {
     if (error) throw error;
     delquer = "DELETE FROM cash_deposit2.0_central_sales_audit_header where id IN(" + results[0].id + ") and  branch_code= '" + req.session.branch + "' ";
-    res.locals.remittance_connection.query(delquer, function (error, results, fields) {
+    res.locals.mysql_connection_91.query(delquer, function (error, results, fields) {
       if (error) throw error;
       updatequer = "UPDATE 0_other_trans SET central_sales_audit_id =null,group_id=null,paid =0 where central_sales_audit_id IN(" + req.body.id + ")";
       console.log(updatequer);
