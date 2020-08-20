@@ -50,6 +50,7 @@ router.get('/getdeposit', function (req, res, next) {
               max(cleared) as cleared,
               group_concat(date_created) as date_created,
               group_concat(transaction_date) as transaction_date,
+              group_id as withpayment,
               CASE WHEN group_id	is null THEN id ELSE group_id END as group_ids
               FROM cash_deposit2.0_sales_withdrawal
               WHERE branch_code='`+ req.session.branch + `' ` + qry + `
@@ -128,6 +129,7 @@ router.get('/getfilterdeposit', function (req, res, next) {
                     max(cleared) as cleared,
                     group_concat(date_created) as date_created,
                     group_concat(transaction_date) as transaction_date,
+                    group_id as withpayment,
                     CASE WHEN group_id	is null THEN id ELSE group_id END as group_ids
                     FROM cash_deposit2.0_sales_withdrawal
                     WHERE transaction_date>= '`+ req.query.date_from + `'
@@ -138,7 +140,7 @@ router.get('/getfilterdeposit', function (req, res, next) {
 
 
 
-  // console.log(queryString);
+  console.log(queryString);
   //var x=0;
   //var y=0;
 
@@ -354,13 +356,17 @@ router.put('/updatedeposit', function (req, res, next) {
 });
 
 router.delete('/deletedeposit', function (req, res, next) {
-  res.locals.mysql_connection_91.query("DELETE FROM cash_deposit2.0_central_sales_audit_header where aria_trans_nos = '" + req.body.id + "' and branch_code= '" + req.session.branch + "'", function (error, results, fields) {
+
+  getdelid = `select id from 0_sales_withdrawal where id IN (` + req.body.id + `)`;
+  delquery = `DELETE FROM cash_deposit2.0_central_sales_audit_header where aria_trans_nos
+       IN (`+ getdelid + `)  and branch_code= '` + req.session.branch + `' `;
+  res.locals.mysql_connection_91.query(delquery, function (error, results, fields) {
     if (error) throw error;
 
-    res.locals.mysql_connection_91.query("UPDATE cash_deposit2.0_sales_withdrawal SET cleared='0',central_sales_audit_id='0' where id = '" + req.body.id + "'",
+    res.locals.mysql_connection_91.query("UPDATE cash_deposit2.0_sales_withdrawal SET cleared='0',central_sales_audit_id='0',group_id=null where id IN (" + req.body.id + ") and branch_code= '" + req.session.branch + "' ",
       function (error, results2, fields) {
         if (error) throw error;
-        //console.log(req.body.selected_ids);
+        console.log(req.body.selected_ids);
         res.send(JSON.stringify(results2));
       });
 

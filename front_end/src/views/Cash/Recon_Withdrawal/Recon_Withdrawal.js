@@ -582,7 +582,8 @@ class Pagis extends React.PureComponent {
 
   handleDelete(Depositdata) {
     const Deposit = {
-      id: Depositdata.id
+      id: Depositdata.id,
+      group_ids: Depositdata.group_ids
     };
 
     Swal({
@@ -598,7 +599,8 @@ class Pagis extends React.PureComponent {
         //console.log(Deposit);
         axios.delete('http://' + BACKENDIP + ':' + BACKENDPORT + '/reconwithdrawal/deletedeposit', {
           data: {
-            id: Deposit.id
+            id: Deposit.id,
+            group_ids: Deposit.group_ids
           }
         })
           .then(res => {
@@ -860,12 +862,13 @@ class Pagis extends React.PureComponent {
         text: 'Void',
         isDummyField: true,
         formatter: (products, row) => {
-          if (row.cleared == 1) {
+          //console.log(row.paidtotal + 'paid');
+
+          if (row.withpayment != null) {
             return (
               <Button type="submit" outline color="danger" size="sm" onClick={() => this.handleDelete(row)}><i className="fa fa-pencil-square-o"></i>&nbsp; Void</Button>
             );
-          }
-          else {
+          } else {
             return (
               <Button type="submit" outline color="secondary" size="sm" onClick={() => this.handleDelete(row)} disabled><i className="fa fa-pencil-square-o"></i>&nbsp; Void</Button>
             );
@@ -908,8 +911,8 @@ class Pagis extends React.PureComponent {
 
 
     const transtype = this.state.tSelected.map((tSelected) => tSelected.transaction_type);
-    console.log(totalselected + 'totalselected');
-    console.log(totalpaid + 'totalpaid');
+    //  console.log(totalselected + 'totalselected');
+    // console.log(totalpaid + 'totalpaid');
 
 
     var oiamount = 0;

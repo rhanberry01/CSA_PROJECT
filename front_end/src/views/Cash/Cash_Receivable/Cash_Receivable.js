@@ -541,43 +541,45 @@ class Pagis extends React.PureComponent {
     return { display: true };
   }
 
-  /*
- handleDelete(Depositdata) {
-   const Deposit = {
-     id: Depositdata.id
-   };
- 
-   Swal({
-     title: 'Are you sure?',
-     text: "You won't be able to revert this!",
-     type: 'warning',
-     showCancelButton: true,
-     confirmButtonColor: '#3085d6',
-     cancelButtonColor: '#d33',
-     confirmButtonText: 'Yes, delete it!'
-   }).then((result) => {
-     if (result.value) {
-     //console.log(Deposit);
-     axios.delete('http://'+BACKENDIP+':'+BACKENDPORT+'/cashreceivable/deletedeposit', {
-     data:{ 
-         id: Deposit.id
-       }
-     })
-     .then(res => {
-       //console.log(res);
-       //console.log(res.data);
-       this.setState({ toRedirect:true });
-       //console.log("deleted");
-       Swal(
-         'Deleted!',
-         'Transaction has been deleted.',
-         'success'
-       )
-     })
-   }
-   })
- }
- */
+
+  handleDelete(Depositdata) {
+    // console.log(Depositdata);
+    const Deposit = {
+      trans_no: Depositdata.trans_no,
+      central_sales_audit_id: Depositdata.central_sales_audit_id
+    };
+
+    Swal({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.value) {
+        axios.delete('http://' + BACKENDIP + ':' + BACKENDPORT + '/cashreceivable/deletedeposit', {
+          data: {
+            id: Deposit.central_sales_audit_id,
+            trans_no: Deposit.trans_no
+          }
+        })
+          .then(res => {
+            this.setState({ toRedirect: true });
+            Swal.fire({
+              position: 'center',
+              type: 'success',
+              title: 'Payment transaction has been Voided.',
+              showConfirmButton: false,
+              timer: 2000
+            })
+
+          })
+      }
+    })
+  }
+
 
   handleOnSelect = (row, isSelect) => {
     if (isSelect) {
@@ -855,6 +857,26 @@ class Pagis extends React.PureComponent {
         footer: ""
       },
       {
+        dataField: 'Void',
+        text: 'Void',
+        isDummyField: true,
+        formatter: (products, row) => {
+          //console.log(row.paidtotal + 'paid');
+
+          if (row.central_sales_audit_id != null) {
+            return (
+              <Button type="submit" outline color="danger" size="sm" onClick={() => this.handleDelete(row)}><i className="fa fa-pencil-square-o"></i>&nbsp; Void</Button>
+            );
+          } else {
+            return (
+              <Button type="submit" outline color="secondary" size="sm" onClick={() => this.handleDelete(row)} disabled><i className="fa fa-pencil-square-o"></i>&nbsp; Void</Button>
+            );
+          }
+
+        },
+        footer: ""
+      },
+      {
         dataField: 'View',
         text: 'View',
         formatter: (cellContent, row) => (
@@ -863,15 +885,8 @@ class Pagis extends React.PureComponent {
         footer: ""
       }
     ];
-    /*
-    {
-    dataField: 'Void',
-    text: 'Void',
-    formatter: (cellContent, row) => (
-      <Button type="submit" outline color="danger" size="sm" onClick={() => this.handleDelete(row)}><i className="fa fa-pencil-square-o"></i>&nbsp; Void</Button>
-    )
-    }, 
-    */
+
+
     //<Button type="submit" outline color="danger" size="sm" onClick={() => this.handleDelete(row.id)}><i className="fa fa-trash-o"></i>&nbsp; Remove</Button>
 
     const defaultSorted = [{

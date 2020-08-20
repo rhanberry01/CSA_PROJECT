@@ -376,15 +376,32 @@ router.put('/updatedeposit', function(req, res, next) {
       res.send(JSON.stringify(results));
   }); 
 });
-
-router.delete('/deletedeposit', function(req, res, next) {
-  res.locals.mysql_connection_91.query("DELETE FROM cash_deposit2.0_central_sales_audit_header where id = '"+req.body.id+"'", function (error, results, fields) {
-      if(error) throw error;
-      res.send(JSON.stringify(results));
-      console.log(req.query.id);
-  }); 
-});
 */
+
+router.delete('/deletedeposit', function (req, res, next) {
+
+  selectdelid = "select group_concat(id) as id from cash_deposit2.0_central_sales_audit_header where aria_trans_nos in(" + req.body.trans_no + ") and  branch_code= '" + req.session.branch + "' ";
+  console.log(selectdelid);
+  res.locals.mysql_connection_91.query(selectdelid, function (error, results, fields) {
+    if (error) throw error;
+    delquer = "DELETE FROM cash_deposit2.0_central_sales_audit_header where id IN(" + results[0].id + ") and  branch_code= '" + req.session.branch + "' ";
+    res.locals.remittance_connection.query(delquer, function (error, results, fields) {
+      if (error) throw error;
+      updatequer = "UPDATE 0_other_trans SET central_sales_audit_id =null,group_id=null,paid =0 where central_sales_audit_id IN(" + req.body.id + ")";
+      console.log(updatequer);
+      res.locals.remittance_connection.query(updatequer, function (error, results, fields) {
+        if (error) throw error;
+        res.send(JSON.stringify(results));
+      });
+
+    });
+
+  });
+
+
+
+});
+
 
 /* GET Tender Type listing. */
 router.get('/tenderdropdown', function (req, res, next) {
