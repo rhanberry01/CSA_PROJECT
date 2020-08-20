@@ -1117,7 +1117,7 @@ class Pagis extends React.PureComponent {
                     {this.state.tPay.map((tPay, i) =>
                       (<h6 key={i}>
                         Payment Reference #: {tPay.id}<br />
-                          Date paid : {moment(tPay.transaction_date).format('YYYY-MM-DD')}<br />
+                          Date paid : {moment(tPay.deposit_date).format('YYYY-MM-DD')}<br />
                           Amount paid : {tPay._net_amount}<br />
                           Memo : {tPay.memo_}<br />
                           Other Income :{tPay._oi_amount}<br />

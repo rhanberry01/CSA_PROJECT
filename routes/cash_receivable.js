@@ -261,7 +261,7 @@ router.get('/getpaymenhistory', function (req, res, next) {
   // console.log(`SELECT * FROM cash_deposit2.0_central_sales_audit_header WHERE branch_code='` + req.session.branch + `'  and aria_trans_nos IN (` + req.query.id + `)`);
 
   res.locals.mysql_connection_91.query(
-    `SELECT transaction_date,
+    `SELECT transaction_date,deposit_date,
     (select bank_account_name from  0_all_bank_accounts where account_code = aria_trans_gl_code) as aria_trans_gl_code,
       proof_type_number,
       _net_amount,
@@ -420,12 +420,13 @@ router.get('/bankdropdown', function (req, res, next) {
 });
 
 router.get('/getpayment', function (req, res, next) {
-  res.locals.mysql_connection_91.query(`SELECT SUM(_net_amount) as total_paid,SUM(due_to_customer) as due_to_customer
+  quer = `SELECT SUM(_net_amount) as total_paid,SUM(due_to_customer) as due_to_customer
   FROM cash_deposit2.0_central_sales_audit_header
-  where aria_trans_nos IN (` + req.query.id + `)`, function (error, results, fields) {
+  where aria_trans_nos IN (` + req.query.id + `) AND branch_code='` + req.session.branch + `' `;
+  res.locals.mysql_connection_91.query(quer, function (error, results, fields) {
     if (error) throw error;
     res.send(JSON.stringify(results));
-    //console.log(req.query.id);
+    console.log(quer);
   });
 
   res.locals.mysql_connection_91.end();
