@@ -41,6 +41,7 @@ class CashDeposit extends React.Component {
       amount: '',
       memo: '',
       bal: '',
+      upd: '',
       tCash: [],
       tDep: [],
       tWith: [],
@@ -252,6 +253,7 @@ class CashDeposit extends React.Component {
         //console.log('true.');
         const Deposit = {
           bal: e.target.bal.value,
+          upd: e.target.upd.value,
           amount: this.state.amount,
           memo: this.state.memo,
           transaction_date: this.state.salesDate,
@@ -268,7 +270,7 @@ class CashDeposit extends React.Component {
         var a = new Number(Deposit.amount).toFixed(2);
         var b = new Number(Deposit.bal).toFixed(2);
         //console.log(b);
-        //console.log(a);
+        // console.log(Deposit.upd + 'uuppppp');
 
         if (Number(a) > Number(b)) {
           Swal({
@@ -825,17 +827,17 @@ class Pagis extends React.PureComponent {
     //console.log(b + 'rhans');
     //  console.log(this.state.file);
 
-    if (Number(a) > Number(b)) {
-      Swal({
-        type: 'error',
-        title: 'Oops...',
-        text: 'Something went wrong!',
-      })
-      //console.log("invalid");
-      //alert("invalid");
-      this.setState({ visiblealertGreater: true });
-      return;
-    }
+    /*  if (Number(a) > Number(b)) {
+        Swal({
+          type: 'error',
+          title: 'Oops...',
+          text: 'Something went wrong!',
+        })
+        //console.log("invalid");
+        //alert("invalid");
+        this.setState({ visiblealertGreater: true });
+        return;
+      }*/
 
     //console.log(Deposit);
     Swal({
@@ -1269,6 +1271,7 @@ class Pagis extends React.PureComponent {
                       </h6>
                       <FormGroup>
                         <Input type="hidden" id="bal" name="bal" value={totalbalance} onChange={this.handleSalesDateChange} />
+                        <Input type="hidden" id="upd" name="upd" value="1" />
                       </FormGroup>
                     </Col>
                   </Row>
