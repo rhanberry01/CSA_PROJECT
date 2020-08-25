@@ -253,7 +253,6 @@ class CashDeposit extends React.Component {
         //console.log('true.');
         const Deposit = {
           bal: e.target.bal.value,
-          upd: e.target.upd.value,
           amount: this.state.amount,
           memo: this.state.memo,
           transaction_date: this.state.salesDate,
