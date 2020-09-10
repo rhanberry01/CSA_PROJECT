@@ -479,7 +479,7 @@ class Pagis extends React.PureComponent {
       .then(res => {
         const Deposits = res.data;
         this.setState({ Deposits, loading: false });
-        //console.log(Deposits);
+        console.log(Deposits);
       })
       .catch(function (error) {
         console.log(error);
@@ -506,7 +506,7 @@ class Pagis extends React.PureComponent {
       .then(res => {
         const Deposits = res.data;
         this.setState({ Deposits, loading: false });
-        //console.log("x");
+        console.log(JSON.stringify(Deposits));
       })
       .catch(function (error) {
         console.log(error);

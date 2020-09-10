@@ -82,6 +82,24 @@ const dbconfig = {
     remittance_user: 'root',
     remittance_password: 'srsnova',
     remittance_db: 'cashier_remittance',
+  },
+  {
+    br_code: 'srsval',
+    br_name: 'VALENZUELA',
+    central_host: '192.168.0.91',
+    central_user: 'root',
+    central_password: 'srsnova',
+    central_db: 'cash_deposit2',
+
+    aria_host: '192.168.0.91',
+    aria_user: 'root',
+    aria_password: 'srsnova',
+    aria_db: 'srs_aria_navotas',
+
+    remittance_host: '192.168.114.100',
+    remittance_user: 'root',
+    remittance_password: 'srsnova',
+    remittance_db: 'cashier_remittance',
   }
   ]
 };

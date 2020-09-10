@@ -159,6 +159,7 @@ class Pagis extends React.PureComponent {
       selectedOption: '',
       overtype: '',
       otherincome: '',
+      dueee: 0,
       overtypename: ''
     };
 
@@ -170,6 +171,7 @@ class Pagis extends React.PureComponent {
     this.handleChange = this.handleChange.bind(this);
     this.onChangeRadioValue = this.onChangeRadioValue.bind(this);
     this.handleAmountChange = this.handleAmountChange.bind(this);
+    this.handleAmountChangeDueEE = this.handleAmountChangeDueEE.bind(this);
     this.handleSalesDateChange = this.handleSalesDateChange.bind(this);
     this.handleDepositDateChange = this.handleDepositDateChange.bind(this);
     this.handledeptypeChange = this.handledeptypeChange.bind(this);
@@ -426,6 +428,13 @@ class Pagis extends React.PureComponent {
     //console.log(this.state.value);
   }
 
+  handleAmountChangeDueEE(e) {
+    // check it out: we get the evt.target.name (which will be either "email" or "password")
+    // and use it to target the key on our `state` object with the same name, using bracket syntax
+    this.setState({ dueee: e.target.value });
+    //console.log(this.state.value);
+  }
+
   handledeptypeChange(e) {
     this.setState({ transaction_detail_type: e.target.value });
   }
@@ -479,6 +488,7 @@ class Pagis extends React.PureComponent {
           trans_type: e.target.trans_type.value,
           ref: e.target.ref.value,
           amount: this.state.amount,
+          dueee: this.state.dueee,
           memo: this.state.memo,
           transaction_date: this.state.salesDate,
           date_created: this.state.depositDate,
@@ -496,6 +506,7 @@ class Pagis extends React.PureComponent {
         axios.defaults.withCredentials = true;
         axios.post('http://' + BACKENDIP + ':' + BACKENDPORT + '/cashreceivable/adddeposit', {
           amount: Deposit.amount,
+          dueee: Deposit.dueee,
           memo: Deposit.memo,
           deposit_date: moment(this.state.depositDate).format('YYYY-MM-DD'),
           date_created: moment().format('YYYY-MM-DD'),
@@ -803,10 +814,18 @@ class Pagis extends React.PureComponent {
         headerStyle: { backgroundColor: '#84b3ff' },
         footer: columnData => columnData.reduce((acc, item) => acc + item, 0)
       },
-      ,
       {
         dataField: 'due_to_customer',
         text: 'Over Payment',
+        sort: true,
+        headerSortingStyle,
+        formatter: amountFormatter,
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: columnData => columnData.reduce((acc, item) => acc + item, 0)
+      },
+      {
+        dataField: 'due_to_employee',
+        text: 'Due to EE',
         sort: true,
         headerSortingStyle,
         formatter: amountFormatter,
@@ -821,7 +840,7 @@ class Pagis extends React.PureComponent {
         headerSortingStyle,
 
         formatter: (products, row) => {
-          var balance = row.trans_amount - row.paidtotal + row._oi_amount - row._ewt + row.due_to_customer;
+          var balance = row.trans_amount - row.paidtotal + row._oi_amount - row._ewt + row.due_to_customer - row.due_to_employee;
           // console.log(row.due_to_customer);
           if (balance < 0) {
             return (
@@ -900,31 +919,44 @@ class Pagis extends React.PureComponent {
     const totalpaid = this.state.tWith.map((tWith, i) => tWith.total_paid)
     const due_to_customer = this.state.tWith.map((tWith, i) => tWith.due_to_customer)
 
+    console.log(totalselected);
+    console.log(totalpaid);
+
+    console.log('---' + this.state.otherincome);
+
+    console.log('---' + this.state.dueee);
+
     var oiamount = 0;
     var overtype = this.state.overtype;
-    var chk_oi = ((totalselected - totalpaid) - this.state.otherincome).toFixed(2);
+    var chk_oi = (((totalselected - totalpaid) - this.state.otherincome) - parseInt(this.state.dueee)).toFixed(2);
 
     var stat = 0;
     switch (this.state.overtype) {
-      case 'wt': // ewt 
+      case 'wtv': // ewt 
         var val = ((totalselected / 1.12) * 0.01);
         var stat = 1;
         // console.log(val + "ewt");
         break;
+      case 'wtnv': // ewt 
+        var val = (totalselected * 0.01);
+        var stat = 1;
+        // console.log(val + "ewt");
+        break;
       case 'ot': // otherincome
-        var chk_oi = ((totalselected - totalpaid) - this.state.otherincome).toFixed(2);
+        var chk_oi = (((totalselected - totalpaid) - this.state.otherincome) - parseInt(this.state.dueee)).toFixed(2);
+        //chk_oi = parseInt(chk_oi) + parseInt();
+
         if (chk_oi < 0) {
-          var val = Math.abs((totalselected - totalpaid) - this.state.otherincome).toFixed(2);
+          var val = Math.abs(((totalselected - totalpaid) - this.state.otherincome) - parseInt(this.state.dueee)).toFixed(2);
           var stat = 1;
         } else {
           var stat = 0;
         }
-        //   console.log(val + "otherincome");
         break;
       case 'ov': // overpayement
-        var chk_oi = ((totalselected - totalpaid) - this.state.otherincome).toFixed(2);
+        var chk_oi = (((totalselected - totalpaid) - this.state.otherincome) - parseInt(this.state.dueee)).toFixed(2);
         if (chk_oi < 0) {
-          var val = Math.abs((totalselected - totalpaid) - this.state.otherincome).toFixed(2);
+          var val = Math.abs(((totalselected - totalpaid) - this.state.otherincome) - parseInt(this.state.dueee)).toFixed(2);
           var stat = 1;
         } else {
           var stat = 0;
@@ -1056,7 +1088,12 @@ class Pagis extends React.PureComponent {
                         <Input type="number" id="amount" name="amount" placeholder="Enter Amount.." value={this.state.amount} onChange={this.handleAmountChange} />
                       </FormGroup>
                     </Col>
-                    <Col xs="6">
+                    <Col xs="3">
+                      <Label htmlFor="dueee">Due EE</Label>
+                      <Input type="number" id="duee" name="duee" placeholder="Enter Amount.." value={this.state.dueee} onChange={this.handleAmountChangeDueEE} />
+                    </Col>
+
+                    <Col xs="3">
                       <Label htmlFor="ref">Ref#, Check#, DM#, OR#</Label>
                       <Input type="text" id="ref" name="ref" placeholder="Enter Reference Num.." onChange={this.handleChange} />
                     </Col>
@@ -1064,15 +1101,20 @@ class Pagis extends React.PureComponent {
                   <Row >
                     <Col xs="2">
                       <FormGroup>
-                        <input type="radio" value="wt" name="WITH EWT : " checked={this.state.selectedOption === "wt"} onChange={this.onChangeRadioValue} /> EWT
+                        <input type="radio" value="wtnv" name="WITH EWT NON VAT : " checked={this.state.selectedOption === "wtnv"} onChange={this.onChangeRadioValue} /> EWT-NVAT
                       </FormGroup>
                     </Col>
-                    <Col xs="4">
+                    <Col xs="2">
                       <FormGroup>
-                        <input type="radio" value="ot" name="OTHER INCOME :" checked={this.state.selectedOption === "ot"} onChange={this.onChangeRadioValue} /> Other Income(Cashier Overage)
+                        <input type="radio" value="wtv" name="WITH EWT VAT: " checked={this.state.selectedOption === "wtv"} onChange={this.onChangeRadioValue} /> EWT-VAT
                       </FormGroup>
                     </Col>
-                    <Col xs="4">
+                    <Col xs="3">
+                      <FormGroup>
+                        <input type="radio" value="ot" name="OTHER INCOME :" checked={this.state.selectedOption === "ot"} onChange={this.onChangeRadioValue} /> OI (Cashier Overage)
+                      </FormGroup>
+                    </Col>
+                    <Col xs="3">
                       <FormGroup>
                         <input type="radio" value="ov" name="OVERPAYMENT : " checked={this.state.selectedOption === "ov"} onChange={this.onChangeRadioValue} /> Over Payment
                       </FormGroup>
@@ -1120,11 +1162,12 @@ class Pagis extends React.PureComponent {
                           Date paid : {moment(tPay.deposit_date).format('YYYY-MM-DD')}<br />
                           Amount paid : {tPay._net_amount}<br />
                           Memo : {tPay.memo_}<br />
-                          Other Income :{tPay._oi_amount}<br />
-                          EWT :{tPay._ewt}<br />
-                          Due to Customer :{tPay.due_to_customer}<br />
-                          Tender :{tPay.tender_code}<br />
-                          Bank :{tPay.aria_trans_gl_code}<br />
+                          Other Income : {tPay._oi_amount}<br />
+                          EWT : {tPay._ewt}<br />
+                          Due to Customer : {tPay.due_to_customer}<br />
+                          Tender : {tPay.tender_code}<br />
+                          Due to Employee : {tPay.due_to_employee}<br />
+                          Bank : {tPay.aria_trans_gl_code}<br />
                       </h6>))}
 
 

@@ -7,7 +7,7 @@ router.get('/getdeposit', function (req, res, next) {
 
   function get_paid(rows) {
 
-    var total_query = `SELECT sum(_net_amount) as total,sum(_oi_amount) as _oi_amount,sum(_ewt) as _ewt,sum(due_to_customer) as due_to_customer FROM cash_deposit2.0_central_sales_audit_header WHERE transaction_type='219' 
+    var total_query = `SELECT sum(_net_amount) as total,sum(_oi_amount) as _oi_amount,sum(_ewt) as _ewt,sum(due_to_customer) as due_to_customer,sum(due_to_employee) as due_to_employee FROM cash_deposit2.0_central_sales_audit_header WHERE transaction_type='219' 
            AND branch_code='` + req.session.branch + `' AND aria_trans_nos IN(` + rows + `)`;
     return new Promise(function (resolve, reject) {
       res.locals.aria_connection.query(total_query, (total_err, total_rows) => {
@@ -79,7 +79,8 @@ router.get('/getdeposit', function (req, res, next) {
         paidtotal: paidresult[0].total,
         _oi_amount: paidresult[0]._oi_amount,
         _ewt: paidresult[0]._ewt,
-        due_to_customer: paidresult[0].due_to_customer
+        due_to_customer: paidresult[0].due_to_customer,
+        due_to_employee: paidresult[0].due_to_employee
       });
       //console.log(mydata);
       arr.push(mydata);
@@ -95,7 +96,7 @@ router.get('/getdeposit', function (req, res, next) {
 
 router.get('/getfilterdeposit', function (req, res, next) {
   function get_paid(rows) {
-    var total_query = `SELECT sum(_net_amount) as total,sum(_oi_amount) as _oi_amount,sum(_ewt) as _ewt,sum(due_to_customer) as due_to_customer  FROM cash_deposit2.0_central_sales_audit_header WHERE transaction_type='219' 
+    var total_query = `SELECT sum(_net_amount) as total,sum(_oi_amount) as _oi_amount,sum(_ewt) as _ewt,sum(due_to_customer) as due_to_customer,sum(due_to_employee) as due_to_employee  FROM cash_deposit2.0_central_sales_audit_header WHERE transaction_type='219' 
       AND branch_code='` + req.session.branch + `' AND aria_trans_nos IN(` + rows + `)`;
 
     return new Promise(function (resolve, reject) {
@@ -170,7 +171,8 @@ router.get('/getfilterdeposit', function (req, res, next) {
         paidtotal: paidresult[0].total,
         _oi_amount: paidresult[0]._oi_amount,
         _ewt: paidresult[0]._ewt,
-        due_to_customer: paidresult[0].due_to_customer
+        due_to_customer: paidresult[0].due_to_customer,
+        due_to_employee: paidresult[0].due_to_employee
 
       });
       //console.log(mydata);
@@ -268,6 +270,7 @@ router.get('/getpaymenhistory', function (req, res, next) {
       _ewt,
       _oi_amount,
       due_to_customer,
+      due_to_employee,
       memo_,
       (select description from  cash_deposit2.0_tendertypes where tendercode = tender_code) as tender_code
     FROM cash_deposit2.0_central_sales_audit_header
@@ -290,7 +293,10 @@ router.post('/adddeposit', function (req, res, next) {
   var due_to_customer = req.body.due_to_customer;
   //console.log(req.body.overtype + 'overtype');
   switch (req.body.overtype) {
-    case 'wt': // ewt 
+    case 'wtv': // ewt 
+      ewt = req.body.t_otherincome;
+      break;
+    case 'wtnv': // ewt 
       ewt = req.body.t_otherincome;
       break;
     case 'ot': // otherincome
@@ -303,14 +309,20 @@ router.post('/adddeposit', function (req, res, next) {
 
   }
   var amount = req.body.amount;
+  var due_to_employee = req.body.dueee;
+
+  //console.log(due_to_employee + 'due_to_employee');
+
   if (due_to_customer != 0) {
-    overpayment = (req.body.amount - ewt - due_to_customer) - due_to_customer;
+    overpayment = ((req.body.amount) - ewt - due_to_customer) - due_to_customer;
     amount = (req.body.amount - ewt - due_to_customer);
     // console.log(amount + 'due')
   }
 
 
-  var paid_stats = math.round(req.body.t_receivable, 2) - (math.round(amount, 2) + math.round(req.body.t_paid, 2) - math.round(other_income, 2));
+
+
+  var paid_stats = math.round(req.body.t_receivable, 2) - ((math.round(amount, 2) + math.round(due_to_employee, 2)) + math.round(req.body.t_paid, 2) - math.round(other_income, 2));
   var stats = math.round(paid_stats);
 
   /*console.log(ewt);
@@ -330,14 +342,9 @@ router.post('/adddeposit', function (req, res, next) {
       //console.log(req.body.selected_ids);
       // res.send(JSON.stringify(resultsg));
 
-
-
-
-
-
-      res.locals.mysql_connection_91.query(`INSERT INTO cash_deposit2.0_central_sales_audit_header(_net_amount,memo_,transaction_date,date_created,deposit_date,transaction_type,aria_trans_gl_code,process_type, aria_trans_nos, proof_type_number, branch_code, tender_code, created_by,group_id,_oi_amount,_ewt,due_to_customer) 
+      res.locals.mysql_connection_91.query(`INSERT INTO cash_deposit2.0_central_sales_audit_header(_net_amount,memo_,transaction_date,date_created,deposit_date,transaction_type,aria_trans_gl_code,process_type, aria_trans_nos, proof_type_number, branch_code, tender_code, created_by,group_id,_oi_amount,_ewt,due_to_customer,due_to_employee) 
               VALUES(` + (req.body.amount - ewt - due_to_customer) + `,'` + req.body.memo + `','` + req.body.sales_date + `','` + req.body.date_created + `','` + req.body.deposit_date + `',
-              '219',` + req.body.aria_trans_gl_code + `,'1','` + req.body.selected_ids + `','` + req.body.ref + `','` + req.session.branch + `','` + req.body.tendercode + `','` + req.session.userId + `','` + resultsg.insertId + `','` + other_income + `','` + ewt + `','` + overpayment + `')`,
+              '219',` + req.body.aria_trans_gl_code + `,'1','` + req.body.selected_ids + `','` + req.body.ref + `','` + req.session.branch + `','` + req.body.tendercode + `','` + req.session.userId + `','` + resultsg.insertId + `','` + other_income + `','` + ewt + `','` + overpayment + `','` + due_to_employee + `')`,
         function (error, results, fields) {
           if (error) throw error;
           //console.log(results.insertId);
