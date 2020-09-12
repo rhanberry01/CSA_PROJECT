@@ -456,19 +456,20 @@ class Pagis extends React.PureComponent {
     //console.log(e); 
     e.preventDefault();
     e.persist(); //to remove synthetic event
+    if (this.state.dueee <= 0) {
+      if (this.state.amount <= 0) {
 
-    if (this.state.amount <= 0) {
+        Swal({
+          type: 'error',
+          title: 'Oops...',
+          text: 'zero, negative and empty amount is not accepted.',
+        })
 
-      Swal({
-        type: 'error',
-        title: 'Oops...',
-        text: 'zero, negative and empty amount is not accepted.',
-      })
-      //console.log("invalid");
-      //alert("invalid");
-      this.setState({ visiblealert: true });
-      return;
+        this.setState({ visiblealert: true });
+        return;
+      }
     }
+
 
     Swal({
       title: 'Are you sure?',
@@ -919,12 +920,12 @@ class Pagis extends React.PureComponent {
     const totalpaid = this.state.tWith.map((tWith, i) => tWith.total_paid)
     const due_to_customer = this.state.tWith.map((tWith, i) => tWith.due_to_customer)
 
-    console.log(totalselected);
-    console.log(totalpaid);
+    //console.log(totalselected);
+    //console.log(totalpaid);
 
-    console.log('---' + this.state.otherincome);
+    //console.log('---' + this.state.otherincome);
 
-    console.log('---' + this.state.dueee);
+    //console.log('---' + this.state.dueee);
 
     var oiamount = 0;
     var overtype = this.state.overtype;
@@ -1083,7 +1084,7 @@ class Pagis extends React.PureComponent {
                       <FormGroup>
                         <Label htmlFor="amount">Amount to Pay:</Label>
                         <Alert color="danger" isOpen={this.state.visiblealert} toggle={this.onAlert}>
-                          {notifyZero}
+
                         </Alert>
                         <Input type="number" id="amount" name="amount" placeholder="Enter Amount.." value={this.state.amount} onChange={this.handleAmountChange} />
                       </FormGroup>
