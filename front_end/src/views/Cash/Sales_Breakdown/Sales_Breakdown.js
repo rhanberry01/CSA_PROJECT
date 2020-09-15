@@ -479,10 +479,10 @@ class Pagis extends React.PureComponent {
       .then(res => {
         const Deposits = res.data;
         this.setState({ Deposits, loading: false });
-        console.log(Deposits);
+        //console.log(Deposits);
       })
       .catch(function (error) {
-        console.log(error);
+        // console.log(error);
       });
   }
 
@@ -495,8 +495,9 @@ class Pagis extends React.PureComponent {
       status_type: this.state.statusType,
     });
     */
-
-    axios.get('http://' + BACKENDIP + ':' + BACKENDPORT + '/salesbreakdown/getselectedbreakdown', {
+    this.setState({ loading: true });
+    //  axios.get('http://' + BACKENDIP + ':' + BACKENDPORT + '/salesbreakdown/getselectedbreakdown', {
+    axios.get('http://' + BACKENDIP + ':' + BACKENDPORT + '/salesbreakdown/getbreakdown', {
       params: {
         date_from: moment(this.state.dateFrom).format('YYYY-MM-DD'),
         date_to: moment(this.state.dateTo).format('YYYY-MM-DD'),
