@@ -97,7 +97,7 @@ router.get('/getdeposit', function (req, res, next) {
 
 router.get('/getfilterdeposit', function (req, res, next) {
   function get_paid(rows) {
-    var total_query = `SELECT sum(_net_amount) as total,sum(_oi_amount) as _oi_amount,sum(_ewt) as _ewt,sum(due_to_customer) as due_to_customer,sum(due_to_employee) as due_to_employee  FROM cash_deposit2.0_central_sales_audit_header WHERE transaction_type='219' 
+    var total_query = `SELECT sum(_net_amount) as total,sum(_oi_amount) as _oi_amount,sum(_ewt) as _ewt,sum(due_to_customer) as due_to_customer,sum(due_to_employee) as due_to_employee,aria_throw  FROM cash_deposit2.0_central_sales_audit_header WHERE transaction_type='219' 
       AND branch_code='` + req.session.branch + `' AND aria_trans_nos IN(` + rows + `)`;
 
     return new Promise(function (resolve, reject) {
@@ -173,7 +173,8 @@ router.get('/getfilterdeposit', function (req, res, next) {
         _oi_amount: paidresult[0]._oi_amount,
         _ewt: paidresult[0]._ewt,
         due_to_customer: paidresult[0].due_to_customer,
-        due_to_employee: paidresult[0].due_to_employee
+        due_to_employee: paidresult[0].due_to_employee,
+        aria_throw: paidresult[0].aria_throw
 
       });
       //console.log(mydata);
