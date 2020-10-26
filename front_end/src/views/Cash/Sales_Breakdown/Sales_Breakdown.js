@@ -971,6 +971,24 @@ class Pagis extends React.PureComponent {
         footer: columnData => columnData.reduce((acc, item) => acc + item, 0)
       },
       {
+        dataField: 'ts_paymaya',
+        text: 'Paymaya',
+        sort: true,
+        headerSortingStyle,
+        formatter: amountFormatter,
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: columnData => columnData.reduce((acc, item) => acc + item, 0)
+      },
+      {
+        dataField: 'ts_grabmart',
+        text: 'GrabMart',
+        sort: true,
+        headerSortingStyle,
+        formatter: amountFormatter,
+        headerStyle: { backgroundColor: '#84b3ff' },
+        footer: columnData => columnData.reduce((acc, item) => acc + item, 0)
+      },
+      {
         dataField: 'ts_cwtax',
         text: 'cwTax',
         sort: true,

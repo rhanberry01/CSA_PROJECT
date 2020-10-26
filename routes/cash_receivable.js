@@ -7,7 +7,7 @@ router.get('/getdeposit', function (req, res, next) {
 
   function get_paid(rows) {
 
-    var total_query = `SELECT sum(_net_amount) as total,sum(_oi_amount) as _oi_amount,sum(_ewt) as _ewt,sum(due_to_customer) as due_to_customer,sum(due_to_employee) as due_to_employee FROM cash_deposit2.0_central_sales_audit_header WHERE transaction_type='219' 
+    var total_query = `SELECT sum(_net_amount) as total,sum(_oi_amount) as _oi_amount,sum(_ewt) as _ewt,sum(due_to_customer) as due_to_customer,sum(due_to_employee) as due_to_employee, aria_throw FROM cash_deposit2.0_central_sales_audit_header WHERE transaction_type='219' 
            AND branch_code='` + req.session.branch + `' AND aria_trans_nos IN(` + rows + `)`;
     return new Promise(function (resolve, reject) {
       res.locals.aria_connection.query(total_query, (total_err, total_rows) => {
@@ -58,7 +58,7 @@ router.get('/getdeposit', function (req, res, next) {
               FROM 0_other_trans as ot
               LEFT JOIN 0_tendertypes_category as ttc
               ON ot.tender_type_category=ttc.tender_category_id
-              where tender_type in ('103','104')
+              where tender_type in ('103','104','105')
               and cast(lastdatemodified as date) = CURRENT_DATE()
               ` + qry + `  GROUP BY group_ids 
               ORDER BY transaction_date desc`;
@@ -80,7 +80,8 @@ router.get('/getdeposit', function (req, res, next) {
         _oi_amount: paidresult[0]._oi_amount,
         _ewt: paidresult[0]._ewt,
         due_to_customer: paidresult[0].due_to_customer,
-        due_to_employee: paidresult[0].due_to_employee
+        due_to_employee: paidresult[0].due_to_employee,
+        aria_throw: paidresult[0].aria_throw
       });
       //console.log(mydata);
       arr.push(mydata);
@@ -148,7 +149,7 @@ router.get('/getfilterdeposit', function (req, res, next) {
           FROM 0_other_trans as ot
           LEFT JOIN 0_tendertypes_category as ttc
           ON ot.tender_type_category=ttc.tender_category_id
-          where tender_type in ('103','104')
+          where tender_type in ('103','104','105')
           and transaction_date>= '` + req.query.date_from + `'
           and transaction_date<= '` + req.query.date_to + `'
           ` + qry + `  GROUP BY group_ids  ORDER BY transaction_date desc`;
@@ -242,17 +243,17 @@ router.get('/getfilterdeposit', function(req, res, next) {
   */
 
 router.get('/getselecteddeposit', function (req, res, next) {
-  res.locals.remittance_connection.query(
-    `SELECT * FROM 0_other_trans as ot 
-        LEFT JOIN 0_tendertypes_category as ttc 
-        ON ot.tender_type_category=ttc.tender_category_id 
-        where tender_type in ('103','104') 
-        AND transaction_date>='2019-01-01' 
-        AND trans_no IN (` + req.query.id + `)`,
+  var quer = `SELECT * FROM 0_other_trans as ot 
+  LEFT JOIN 0_tendertypes_category as ttc 
+  ON ot.tender_type_category=ttc.tender_category_id 
+  where tender_type in ('103','104','105') 
+  AND transaction_date>='2019-01-01' 
+  AND trans_no IN (` + req.query.id + `)`;
+  res.locals.remittance_connection.query(quer,
     function (error, results, fields) {
       if (error) throw error;
       res.send(JSON.stringify(results));
-      // console.log(req.query);
+      console.log(quer);
       //console.log(results);
       // console.log(`SELECT * FROM 0_sales_withdrawal where id IN (`+req.query.id+`)`);
     });

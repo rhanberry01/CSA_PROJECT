@@ -883,9 +883,12 @@ class Pagis extends React.PureComponent {
         formatter: (products, row) => {
           //console.log(row.paidtotal + 'paid');
 
-          if (row.central_sales_audit_id != null) {
+          if (row.central_sales_audit_id != null && row.aria_throw != 1) {
             return (
               <Button type="submit" outline color="danger" size="sm" onClick={() => this.handleDelete(row)}><i className="fa fa-pencil-square-o"></i>&nbsp; Void</Button>
+            );
+          } else if (row.aria_throw == 1) {
+            return (<Button type="submit" outline color="secondary" size="sm" onClick={() => this.handleDelete(row)} disabled><i className="fa fa-pencil-square-o"></i>&nbsp; Uploaded </Button>
             );
           } else {
             return (
