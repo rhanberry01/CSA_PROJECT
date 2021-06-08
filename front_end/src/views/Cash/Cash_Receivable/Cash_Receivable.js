@@ -1115,7 +1115,7 @@ class Pagis extends React.PureComponent {
                     </Col>
                     <Col xs="3">
                       <FormGroup>
-                        <input type="radio" value="ot" name="OTHER INCOME :" checked={this.state.selectedOption === "ot"} onChange={this.onChangeRadioValue} /> OI (Cashier Overage/SF)
+                        <input type="radio" value="ot" name="OTHER INCOME :" checked={this.state.selectedOption === "ot"} onChange={this.onChangeRadioValue} /> OI (Cashier Over/SF)
                       </FormGroup>
                     </Col>
                     <Col xs="3">
