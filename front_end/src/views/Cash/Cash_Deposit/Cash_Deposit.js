@@ -393,7 +393,7 @@ class CashDeposit extends React.Component {
                               <Label htmlFor="salesDate">Sales Date:</Label>
                               { /*<DatePicker selected={this.state.salesDate} onChange={this.handleSalesDateChange} maxDate={moment()} minDate={moment().subtract(15, "days")} /> */}
 
-                              <DatePicker selected={this.state.salesDate} onChange={this.handleSalesDateChange} minDate={moment(start.valueOf())} />
+                              <DatePicker selected={this.state.salesDate} onChange={this.handleSalesDateChange} /*minDate={moment(start.valueOf())}*/ />
                             </FormGroup>
                           </Col>
                           <Col xs="6">

@@ -1115,7 +1115,7 @@ class Pagis extends React.PureComponent {
                     </Col>
                     <Col xs="3">
                       <FormGroup>
-                        <input type="radio" value="ot" name="OTHER INCOME :" checked={this.state.selectedOption === "ot"} onChange={this.onChangeRadioValue} /> OI (Cashier Overage)
+                        <input type="radio" value="ot" name="OTHER INCOME :" checked={this.state.selectedOption === "ot"} onChange={this.onChangeRadioValue} /> OI (Cashier Overage/SF)
                       </FormGroup>
                     </Col>
                     <Col xs="3">
@@ -1161,8 +1161,8 @@ class Pagis extends React.PureComponent {
                   <Col>
                     <h6>OR #:{this.state.trans_no}</h6>
                     {this.state.tPay.map((tPay, i) =>
-                      (<h6 key={i}>
-                        Payment Reference #: {tPay.id}<br />
+                    (<h6 key={i}>
+                      Payment Reference #: {tPay.id}<br />
                           Date paid : {moment(tPay.deposit_date).format('YYYY-MM-DD')}<br />
                           Amount paid : {tPay._net_amount}<br />
                           Memo : {tPay.memo_}<br />
@@ -1172,7 +1172,7 @@ class Pagis extends React.PureComponent {
                           Tender : {tPay.tender_code}<br />
                           Due to Employee : {tPay.due_to_employee}<br />
                           Bank : {tPay.aria_trans_gl_code}<br />
-                      </h6>))}
+                    </h6>))}
 
 
                   </Col>

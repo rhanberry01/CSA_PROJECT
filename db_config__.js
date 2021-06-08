@@ -13,7 +13,8 @@ const dbconfig = {
   },
 
   br_code_connection: [{
-    /*br_code: "srsn",
+
+    br_code: "srsn",
     br_name: "NOVALICHES",
     central_host: "localhost",
     central_user: "root",
@@ -29,23 +30,23 @@ const dbconfig = {
     remittance_user: "root",
     remittance_password: "srsnova",
     remittance_db: "cashier_remittance"
-    */
-    br_code: 'srsn',
-    br_name: 'NOVALICHES',
-    central_host: '192.168.0.91',
-    central_user: 'root',
-    central_password: 'srsnova',
-    central_db: 'cash_deposit2',
 
-    aria_host: '192.168.0.91',
-    aria_user: 'root',
-    aria_password: 'srsnova',
-    aria_db: 'srs_aria_nova',
+    //   br_code: 'srsn',
+    //   br_name: 'NOVALICHES',
+    //   central_host: '192.168.0.91',
+    //   central_user: 'root',
+    //   central_password: 'srsnova',
+    //   central_db: 'cash_deposit2',
 
-    remittance_host: '192.168.0.91',
-    remittance_user: 'root',
-    remittance_password: 'srsnova',
-    remittance_db: 'cashier_remittance',
+    //   aria_host: '192.168.0.91',
+    //   aria_user: 'root',
+    //   aria_password: 'srsnova',
+    //   aria_db: 'srs_aria_nova',
+
+    //   remittance_host: '192.168.0.91',
+    //   remittance_user: 'root',
+    //   remittance_password: 'srsnova',
+    //   remittance_db: 'cashier_remittance',
   },
   {
     br_code: 'srscain',

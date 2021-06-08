@@ -281,7 +281,7 @@ class OtherDeposit extends React.Component {
                             <FormGroup>
                               <Label htmlFor="salesDate">Transaction Date:</Label>
                               {/*<DatePicker selected={this.state.salesDate} onChange={this.handleSalesDateChange} maxDate={moment()} minDate={moment().subtract(15, "days")}/>*/}
-                              <DatePicker selected={this.state.salesDate} onChange={this.handleSalesDateChange} minDate={moment(start.valueOf())} />
+                              <DatePicker selected={this.state.salesDate} onChange={this.handleSalesDateChange} /*minDate={moment(start.valueOf())}*/ />
                             </FormGroup>
                           </Col>
                           <Col xs="6">
