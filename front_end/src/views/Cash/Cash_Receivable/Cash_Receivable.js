@@ -1113,12 +1113,12 @@ class Pagis extends React.PureComponent {
                         <input type="radio" value="wtv" name="WITH EWT VAT: " checked={this.state.selectedOption === "wtv"} onChange={this.onChangeRadioValue} /> EWT-VAT
                       </FormGroup>
                     </Col>
-                    <Col xs="3">
+                    <Col xs="4">
                       <FormGroup>
-                        <input type="radio" value="ot" name="OTHER INCOME :" checked={this.state.selectedOption === "ot"} onChange={this.onChangeRadioValue} /> OI (Cashier Over/SF)
+                        <input type="radio" value="ot" name="OTHER INCOME:" checked={this.state.selectedOption === "ot"} onChange={this.onChangeRadioValue} />OI Cashier Overage/Shipping Fee
                       </FormGroup>
                     </Col>
-                    <Col xs="3">
+                    <Col xs="4">
                       <FormGroup>
                         <input type="radio" value="ov" name="OVERPAYMENT : " checked={this.state.selectedOption === "ov"} onChange={this.onChangeRadioValue} /> Over Payment
                       </FormGroup>
