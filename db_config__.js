@@ -2,7 +2,7 @@
 const dbconfig = {
   programIP: "localhost",
   programPort: "8888", //UI port
-  backendPort: "40011", //Back-end port
+  backendPort: "8888", //Back-end port
 
   user_login_connection: {
     //backend for users & user_session set to 91 or 43 or in branch server
