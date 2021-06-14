@@ -149,7 +149,7 @@ router.get('/getfilterdeposit', function (req, res, next) {
           FROM 0_other_trans as ot
           LEFT JOIN 0_tendertypes_category as ttc
           ON ot.tender_type_category=ttc.tender_category_id
-          where tender_type in ('103','104','105')
+          where tender_type in ('103','104','105','333','555')
           and transaction_date>= '` + req.query.date_from + `'
           and transaction_date<= '` + req.query.date_to + `'
           ` + qry + `  GROUP BY group_ids  ORDER BY transaction_date desc`;
@@ -247,7 +247,7 @@ router.get('/getselecteddeposit', function (req, res, next) {
   var quer = `SELECT * FROM 0_other_trans as ot 
   LEFT JOIN 0_tendertypes_category as ttc 
   ON ot.tender_type_category=ttc.tender_category_id 
-  where tender_type in ('103','104','105') 
+  where tender_type in ('103','104','105','333','555') 
   AND transaction_date>='2019-01-01' 
   AND trans_no IN (` + req.query.id + `)`;
   res.locals.remittance_connection.query(quer,
